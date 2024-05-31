@@ -3,7 +3,6 @@ import type { Metadata } from "next";
 import { Noto_Sans_KR } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/wigets";
-import Msw from "./mocks/Msw";
 
 const NOTO_SANS_KR = Noto_Sans_KR({
   preload: true,
@@ -22,7 +21,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko">
-      <Msw />
       <body className={NOTO_SANS_KR.className}>
         <Header />
         <main className="px-4">
