@@ -16,7 +16,7 @@ export default function Header() {
       <nav className="mx-auto flex max-w-screen-xl items-center justify-between">
         <div className="flex items-center space-x-4">
           <div className="text-2xl text-black">
-            <Link href="/">Logo</Link>
+            <Link href="/">BS</Link>
           </div>
           <input
             type="text"

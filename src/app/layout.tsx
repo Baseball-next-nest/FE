@@ -23,7 +23,7 @@ export default function RootLayout({
     <html lang="ko">
       <body className={NOTO_SANS_KR.className}>
         <Header />
-        <main className="px-4">
+        <main className="px-4 bg-gray-100">
           <div className="mx-auto max-w-screen-xl">{children}</div>
         </main>
       </body>
