@@ -1,16 +1,31 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import Navbar from "./Navbar";
-import { setNavbarPages } from "@/entities";
+import { SearchInput } from "@/features/input/SearchInput";
+import { getPlayerNameData } from "@/app/api/api";
+import { useRouter } from "next/navigation";
 
 /* eslint-disable jsx-a11y/anchor-is-valid */
 
 export default function Header() {
-  useEffect(() => {
-    setNavbarPages("/");
-  }, []);
+  const router = useRouter();
+  const [searchTerm, setSearchTerm] = useState("");
+  const setSearchPlayer = (e) => {
+    setSearchTerm(e.target.value);
+  };
+  const onSearchPlayer = async (e) => {
+    if (e.key === "Enter") {
+      const playerData = await getPlayerNameData(searchTerm);
+      const playerId = playerData[0].id;
+      router.push(`http://localhost:3000/player/detail?id=${playerId}`);
+      setSearchTerm("");
+    }
+  };
+  // useEffect(() => {
+  //   setNavbarPages("/");
+  // }, []);
   return (
     <header className="bg-white p-4 text-black shadow-md">
       <nav className="mx-auto flex max-w-screen-xl items-center justify-between">
@@ -18,10 +33,11 @@ export default function Header() {
           <div className="text-2xl text-black">
             <Link href="/">BS</Link>
           </div>
-          <input
-            type="text"
-            placeholder="검색을 해보세요"
-            className="w-96 rounded-full border border-gray-300 p-2 px-4 py-2 text-sm focus:border-transparent focus:shadow-md focus:outline-none"
+          <SearchInput
+            value={searchTerm}
+            onChange={setSearchPlayer}
+            onKeyDown={onSearchPlayer}
+            placeholder="선수를 검색해보세요."
           />
         </div>
         <div>
