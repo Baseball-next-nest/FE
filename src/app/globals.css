@@ -1,7 +1,18 @@
 @tailwind base;
 @tailwind components;
+body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+      to bottom,
+      transparent,
+      rgb(var(--background-end-rgb))
+    )
+    rgb(var(--background-start-rgb));
+}
 @tailwind utilities;
-
+/* .bg-kia {
+  background-color: "#a32525" !important;
+} */
 :root {
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
@@ -16,23 +27,77 @@
   }
 }
 
-body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
-}
-
 @layer utilities {
   .text-balance {
     text-wrap: balance;
   }
 }
-
+.basic-container {
+  color: black;
+  padding-top: 2rem;
+  gap: 2rem;
+  flex-wrap: wrap;
+  width: 100%;
+  display: flex;
+}
+/* player detail grid table */
+.grid-table li {
+  display: table-cell;
+  width: 25%;
+  padding: 7px 0 11px;
+  border: 1px solid #ecf0f2;
+  background: #fbfcfd;
+  line-height: 20px;
+}
+.grid-table li span {
+  display: block;
+  margin-top: 0;
+  font-size: 17px;
+  color: #666;
+}
+.grid-table li strong {
+  display: block;
+  padding: 3px 0 2px;
+  font-size: 13px;
+  font-weight: normal;
+  color: #8f8f8f;
+}
 /* custom styles */
+.scroll-wrap::after {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10;
+  width: 21px;
+  background: -webkit-gradient(
+    linear,
+    left top,
+    right top,
+    from(rgba(255, 255, 255, 0)),
+    color-stop(100%, #fff)
+  );
+  background: -webkit-linear-gradient(left, rgba(255, 255, 255, 0), #fff 100%);
+  background: -webkit-gradient(
+    linear,
+    left top,
+    right top,
+    from(rgba(255, 255, 255, 0)),
+    to(#fff)
+  );
+  background: linear-gradient(to right, rgba(255, 255, 255, 0), #fff 100%);
+  content: "";
+}
+
+.em-custom::before {
+  content: "";
+  display: inline-block;
+  width: 1px;
+  height: 12px;
+  margin: 0 9px 0 6px;
+  background-color: rgba(255, 255, 255, 0.1);
+  vertical-align: -2px;
+}
 .custom-underline {
   position: relative;
 }
