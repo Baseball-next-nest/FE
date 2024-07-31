@@ -9,7 +9,6 @@ interface TableProps {
 }
 
 export const Table: FC<TableProps> = ({ children, hitter, pitcher }) => {
-  console.log(pitcher);
   return (
     // box
     <div className="mb-8 rounded-md border-gray-200 relative overflow-hidden ">
@@ -64,7 +63,14 @@ export const Table: FC<TableProps> = ({ children, hitter, pitcher }) => {
                   <tr className="*:p-2 *:text-center *:text-xs" key={index}>
                     <td className="bg-white sticky left-0 z-10">{index + 1}</td>
                     <td className="*:font-semibold bg-white sticky left-[3.6rem] z-10">
-                      <Link href={"/"}>{hit.NAME}</Link>
+                      <Link
+                        href={{
+                          pathname: "/player/detail",
+                          query: { id: hit.id },
+                        }}
+                      >
+                        {hit.name}
+                      </Link>
                     </td>
                     <td>{hit.WAR}</td>
                     <td>{hit.AVG}</td>
@@ -75,7 +81,7 @@ export const Table: FC<TableProps> = ({ children, hitter, pitcher }) => {
                     <td>{hit.OBP}</td>
                     <td>{hit.SLG}</td>
                     <td>{hit.OPS}</td>
-                    <td>{hit["wRC+"]}</td>
+                    <td>{hit.WRC}</td>
                   </tr>
                 ))}
               {/* 투수 */}
@@ -84,7 +90,14 @@ export const Table: FC<TableProps> = ({ children, hitter, pitcher }) => {
                   <tr className="*:p-2 *:text-center *:text-xs" key={index}>
                     <td className="bg-white sticky left-0 z-10">{index + 1}</td>
                     <td className="*:font-semibold bg-white sticky left-[3.6rem] z-10">
-                      <Link href={"/"}>{pit.NAME}</Link>
+                      <Link
+                        href={{
+                          pathname: "/player/detail",
+                          query: { id: pit.id },
+                        }}
+                      >
+                        {pit.name}
+                      </Link>
                     </td>
                     <td>{pit.WAR}</td>
                     <td>{pit.ERA}</td>
@@ -92,7 +105,7 @@ export const Table: FC<TableProps> = ({ children, hitter, pitcher }) => {
                     <td>{pit.IP}</td>
                     <td>{pit.W}</td>
                     <td>{pit.L}</td>
-                    <td>{pit.SO}</td>
+                    <td>{pit.p_SO}</td>
                     <td>{pit.WHIP}</td>
                     <td>{pit.FIP}</td>
                   </tr>
