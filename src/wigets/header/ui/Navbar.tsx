@@ -1,7 +1,8 @@
 "use client";
 import { usePathname } from "next/navigation";
-import { useNavbarStore } from "@/entities";
+import { setNavbarPages, useNavbarStore } from "@/entities";
 import Link from "next/link";
+import { useEffect } from "react";
 
 const Navbar: React.FC = () => {
   const currentPage = usePathname();
@@ -13,15 +14,16 @@ const Navbar: React.FC = () => {
     }))
   );
 
+  useEffect(() => {
+    setNavbarPages(currentPage);
+  }, [currentPage]);
+
   return (
     <nav className="mx-auto mt-8 flex max-w-screen-xl items-center justify-between">
       <ul className="container mx-auto flex justify-start space-x-6">
         {pages.map((page) => (
           <li key={page.href}>
-            <Link
-              href={{ pathname: page.href, query: { name: page.name } }}
-              legacyBehavior
-            >
+            <Link href={{ pathname: page.href }} legacyBehavior>
               <a
                 className={`text-md font-medium ${
                   page.current ? "link-active" : "custom-underline"
