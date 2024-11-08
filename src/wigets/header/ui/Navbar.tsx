@@ -1,4 +1,4 @@
-"use client";
+// "use client";
 import { usePathname } from "next/navigation";
 import { setNavbarPages, useNavbarStore } from "@/entities";
 import Link from "next/link";

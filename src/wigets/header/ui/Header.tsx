@@ -1,11 +1,13 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { Suspense, useState } from "react";
 import Link from "next/link";
 import Navbar from "./Navbar";
 import { SearchInput } from "@/features/input/SearchInput";
 import { getPlayerNameData } from "@/app/api/api";
 import { useRouter } from "next/navigation";
+import { useSession } from "@/providers/session";
+import { useModalStore } from "@/entities/ModalStore";
 
 /* eslint-disable jsx-a11y/anchor-is-valid */
 
@@ -23,6 +25,9 @@ export default function Header() {
       setSearchTerm("");
     }
   };
+  const session = useSession();
+  console.log(session);
+  const { openLoginModal } = useModalStore();
   // useEffect(() => {
   //   setNavbarPages("/");
   // }, []);
@@ -40,14 +45,9 @@ export default function Header() {
             placeholder="선수를 검색해보세요."
           />
         </div>
-        <div>
-          <a href="#" className="rounded-md px-3 py-2 text-sm text-black">
-            로그인
-          </a>
-          <a href="#" className="rounded-md px-3 py-2 text-sm text-black">
-            회원가입
-          </a>
-        </div>
+        <button onClick={openLoginModal} className="login-button">
+          로그인
+        </button>
       </nav>
       <Navbar />
     </header>
