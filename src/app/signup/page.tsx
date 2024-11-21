@@ -6,38 +6,65 @@ import {
   signInWithKakao,
 } from "@/serverActions/auth";
 import Image from "next/image";
-import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import useLoadingStore from "@/entities/LoadingStore";
+import LoadingSpinner from "@/features/loading/Loading";
 
 export default function SignUpPage() {
   const {
     register,
     handleSubmit,
-    watch,
-    trigger, // 특정 필드의 유효성 검사 트리거
-    formState: { errors, isValid },
+    trigger,
+    setFocus,
+    formState: { errors },
   } = useForm({
-    mode: "onChange", // 입력 시마다 유효성 검사 모드 활성화
+    mode: "onBlur", // 필드 focus를 잃었을 때 유효성 검사 실행
   });
 
-  const onSubmit = async (data) => {
-    const formData = new FormData(); // FormData 객체 생성
+  const router = useRouter();
 
-    // JSON 데이터를 FormData로 변환
+  const { setLoading } = useLoadingStore();
+
+  const onSubmit = async (data) => {
+    const formData = new FormData();
     Object.entries(data).forEach(([key, value]) => {
       formData.append(key, value);
     });
 
-    // FormData 서버 액션 호출
-    await signInWithCredentials(formData);
+    try {
+      setLoading(true);
+      await signInWithCredentials(formData);
+      router.push("/");
+    } catch (err) {
+      console.error("회원가입 실패", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+  const socialSignup = async () => {
+    try {
+      setLoading(true);
+      await signInWithGoogle();
+    } catch (err) {
+      console.error("회원가입 실패", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // 입력 값 실시간 확인 (예: 디버깅용)
-  useEffect(() => {
-    console.log(watch("displayName"), watch("email"), watch("password"));
-  }, [watch]);
+  const handleInvalid = async (data: any) => {
+    // 유효성 검사가 실패한 첫 번째 필드에 focus 설정
+    for (const key of Object.keys(data)) {
+      if (data[key]) {
+        setFocus(key);
+        break;
+      }
+    }
+  };
 
   return (
     <main className="text-black mx-auto py-[4.5rem] px-4 w-[22.5rem] flex items-center flex-col">
+      <LoadingSpinner />
       <div className="mb-6 w-full flex gap-1 items-center justify-center flex-col">
         <h2 className="no-underline font-bold text-[1.625rem] leading-[1.35] m-0">
           회원가입
@@ -47,7 +74,7 @@ export default function SignUpPage() {
         </div>
       </div>
       <form
-        onSubmit={handleSubmit(onSubmit)}
+        onSubmit={handleSubmit(onSubmit, handleInvalid)}
         className="flex gap-1 flex-col w-full signup-form"
       >
         {/* 사용자 이름 */}
@@ -57,15 +84,14 @@ export default function SignUpPage() {
         <input
           placeholder="박건형"
           className={`form-input-currect ${
-            errors.displayName ? "border-red-500" : ""
+            errors.nickname ? "border-red-500 focus:border-red-500" : ""
           }`}
-          {...register("displayName", {
+          {...register("nickname", {
             required: "이름을 입력해주세요.",
           })}
-          onBlur={() => trigger("displayName")} // focus out 시 검사
         />
-        {errors.displayName && (
-          <p className="text-red-500">{errors.displayName.message}</p>
+        {errors.nickname && (
+          <p className="text-red-500">{errors.nickname.message}</p>
         )}
 
         {/* 이메일 입력 */}
@@ -73,7 +99,7 @@ export default function SignUpPage() {
         <input
           placeholder="example@BS.com"
           className={`form-input-currect ${
-            errors.email ? "border-red-500" : ""
+            errors.email ? "red-border focus:red-border" : ""
           }`}
           type="email"
           {...register("email", {
@@ -83,7 +109,6 @@ export default function SignUpPage() {
               message: "X 이메일 형식이 올바르지 않습니다.",
             },
           })}
-          onBlur={() => trigger("email")}
         />
         {errors.email && <p className="text-red-500">{errors.email.message}</p>}
 
@@ -91,7 +116,7 @@ export default function SignUpPage() {
         <label className="mt-[3px]">비밀번호</label>
         <input
           className={`form-input-currect ${
-            errors.password ? "border-red-500" : ""
+            errors.password ? "red-border focus:red-border" : ""
           }`}
           type="password"
           placeholder="********"
@@ -102,13 +127,12 @@ export default function SignUpPage() {
               message: "비밀번호는 최소 8자 이상이어야 합니다.",
             },
           })}
-          onBlur={() => trigger("password")}
         />
         {errors.password && (
           <p className="text-red-500">{errors.password.message}</p>
         )}
 
-        <button className="signup-btn mt-4" type="submit" disabled={!isValid}>
+        <button className="signup-btn mt-4" type="submit">
           <div className="flex items-center justify-center h-full overflow-visible pointer-events-none">
             <span className="whitespace-nowrap h-full overflow-hidden flex items-center">
               가입하기
@@ -117,14 +141,13 @@ export default function SignUpPage() {
         </button>
       </form>
 
-      {/* OAuth 로그인 */}
+      {/* OAuth 회원가입 */}
       <div className="mt-8 w-full flex gap-6 items-center flex-col">
         <div className="easy-signup-box w-full flex gap-[0.375rem] items-center justify-center flex-row">
           <p className="easy-signup">간편 회원가입</p>
         </div>
         <ul className="flex gap-[0.5rem] relative">
           <li>
-            {/* <form action={signInWithKakao}> */}
             <form>
               <button className="kakao-btn" type="submit">
                 <Image src="/kakao.png" alt="kakao" width={30} height={30} />
@@ -132,7 +155,7 @@ export default function SignUpPage() {
             </form>
           </li>
           <li>
-            <form action={signInWithGoogle}>
+            <form action={socialSignup}>
               <button className="google-btn" type="submit">
                 <Image src="/google.png" alt="google" width={30} height={30} />
               </button>

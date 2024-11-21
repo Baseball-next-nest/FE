@@ -46,8 +46,8 @@ body {
   padding: 6px 18px;
   color: #fff;
   border-radius: 8px;
-  background-color: #00c471;
-  border-color: #00c471;
+  background-color: rgb(20, 20, 20);
+  border-color: rgb(46, 45, 45);
   display: inline-block;
   text-align: center;
   text-decoration: none;
@@ -79,11 +79,14 @@ body {
   letter-spacing: -0.3px;
   border-radius: 4px;
   background-color: #fff;
+  color: black;
 }
 .form-sign-up::placeholder {
   font-size: 0.85rem !important;
 }
-
+.red-border {
+  border: 1px solid red !important;
+}
 .form-sign-up:focus {
   border-color: #00c471 !important;
   outline: none;

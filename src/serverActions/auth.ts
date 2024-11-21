@@ -1,17 +1,16 @@
 "use server";
+import { redirect } from "next/navigation";
 import { auth, signIn, signOut, update } from "../../auth";
-
 export const signInWithCredentials = async (formData: FormData) => {
-  console.log(typeof formData);
-  console.log(formData);
   await signIn("credentials", {
-    displayName: formData.get("displayName") || "", // `'null'` 문자 방지
+    nickname: formData.get("nickname") || "", // `'null'` 문자 방지
     email: formData.get("email") || "",
     password: formData.get("password") || "",
+    redirect: false,
   });
 };
 export const signInWithGoogle = async () => {
-  await signIn("google");
+  await signIn("google", { redirectTo: "/" });
 };
 export const signInWithKakao = async () => {
   await signIn("kakao");

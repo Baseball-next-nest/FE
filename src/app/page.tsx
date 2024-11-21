@@ -1,14 +1,16 @@
 import { Table } from "@/features/table/Table";
 import { getHitter, getPitcher } from "./api/api";
 import AuthSection from "@/wigets/header/ui/AuthSection";
+import { getSession } from "@/serverActions/auth";
 
 export default async function Home() {
   const hitter = await getHitter();
   const pitcher = await getPitcher();
+  const session = await getSession();
+  console.log("getSEsiion " + JSON.stringify(session));
   return (
     // <main className="flex min-h-screen flex-col items-center justify-between p-24">
     //
-
     <main className="text-black flex w-full pt-8 flex-wrap gap-8">
       {/* <div>
         <AuthSection />

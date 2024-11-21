@@ -1,19 +1,22 @@
 "use client";
 
-import React, { Suspense, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import Navbar from "./Navbar";
 import { SearchInput } from "@/features/input/SearchInput";
 import { getPlayerNameData } from "@/app/api/api";
 import { useRouter } from "next/navigation";
-import { useSession } from "@/providers/session";
 import { useModalStore } from "@/entities/ModalStore";
+import { getSession, signOutWithForm } from "@/serverActions/auth";
+import { useSessionStore } from "@/entities/SessionStore";
+import { _existUser } from "../../../../auth";
 
 /* eslint-disable jsx-a11y/anchor-is-valid */
 
 export default function Header() {
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
+  const { session, setSession, clearSession } = useSessionStore();
   const setSearchPlayer = (e) => {
     setSearchTerm(e.target.value);
   };
@@ -25,12 +28,30 @@ export default function Header() {
       setSearchTerm("");
     }
   };
-  const session = useSession();
-  console.log(session);
+
+  useEffect(() => {
+    const fetchSession = async () => {
+      const sessionData = await getSession();
+      setSession(sessionData);
+    };
+
+    fetchSession();
+  }, []);
+  const logout = async (event) => {
+    event.preventDefault();
+    try {
+      await signOutWithForm(session);
+      clearSession();
+      window.location.reload();
+    } catch (error) {
+      console.log(error);
+    }
+    router.push("/");
+  };
+  // const check = () => {
+  //   _existUser("robbins3erwer11@nate.com");
+  // };
   const { openLoginModal } = useModalStore();
-  // useEffect(() => {
-  //   setNavbarPages("/");
-  // }, []);
   return (
     <header className="bg-white p-4 text-black shadow-md">
       <nav className="mx-auto flex max-w-screen-xl items-center justify-between">
@@ -45,9 +66,23 @@ export default function Header() {
             placeholder="선수를 검색해보세요."
           />
         </div>
-        <button onClick={openLoginModal} className="login-button">
-          로그인
-        </button>
+
+        {session?.user ? (
+          <>
+            {session.user.email}
+            {session.user.nickname}
+            <form onSubmit={logout}>
+              <button type="submit">로그아웃</button>
+            </form>
+          </>
+        ) : (
+          <>
+            <button onClick={openLoginModal} className="login-button">
+              로그인
+            </button>
+            {/* <button onClick={check}>체크체크</button> */}
+          </>
+        )}
       </nav>
       <Navbar />
     </header>

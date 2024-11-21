@@ -1,4 +1,4 @@
-const BASE_URL =
+export const BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL || "http://43.201.105.90:3000";
 
 async function fetcher(url: string, options?: RequestInit) {

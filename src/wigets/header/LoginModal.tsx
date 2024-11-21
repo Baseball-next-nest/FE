@@ -2,12 +2,30 @@
 import React, { useEffect } from "react";
 import { useModalStore } from "../../entities/ModalStore";
 import { IoIosClose } from "react-icons/io";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
+import { signInWithCredentials, signInWithGoogle } from "@/serverActions/auth";
+import { useForm } from "react-hook-form";
+import { useSessionStore } from "@/entities/SessionStore";
+import useLoadingStore from "@/entities/LoadingStore";
+import LoadingSpinner from "@/features/loading/Loading";
+
+type FormData = {
+  email: string;
+  password: string;
+};
 
 const LoginModal: React.FC = () => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isValid },
+    reset,
+  } = useForm<FormData>();
+  const { setLoading } = useLoadingStore();
   const { isLoginModalOpen, closeLoginModal } = useModalStore();
-
+  const { setSession } = useSessionStore();
   useEffect(() => {
     // 페이지 이동을 감지하기 위해 pushState와 replaceState를 오버라이드.
     const originalPushState = window.history.pushState;
@@ -15,7 +33,9 @@ const LoginModal: React.FC = () => {
 
     const handlePageChange = () => {
       if (isLoginModalOpen) {
-        closeLoginModal();
+        setTimeout(() => {
+          closeLoginModal();
+        }, 0);
       }
     };
 
@@ -38,9 +58,39 @@ const LoginModal: React.FC = () => {
 
   if (!isLoginModalOpen) return null;
 
+  const handleClose = () => {
+    reset(); // 입력 필드 초기화
+    closeLoginModal(); // 모달 닫기
+  };
+
   const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.target === e.currentTarget) {
-      closeLoginModal();
+      handleClose();
+    }
+  };
+  const onError = (errors) => {
+    console.log("Validation failed:", errors);
+    if (errors) {
+      setLoading(true);
+      window.alert("이메일 또는 비밀번호를 확인해주세요.");
+      setLoading(false);
+    }
+  };
+  const onSubmit = async (data) => {
+    const formData = new FormData();
+    Object.entries(data).forEach(([key, value]) => {
+      formData.append(key, value);
+    });
+    try {
+      setLoading(true);
+      await signInWithCredentials(formData);
+      window.location.reload();
+    } catch (error) {
+      window.alert("이메일 또는 비밀번호를 확인해주세요.");
+      setLoading(false);
+      console.log(error);
+    } finally {
+      setLoading(false);
     }
   };
   return (
@@ -48,9 +98,10 @@ const LoginModal: React.FC = () => {
       onClick={handleOverlayClick}
       className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
     >
+      <LoadingSpinner />
       <article className="sign-up-modal">
         <span
-          onClick={closeLoginModal}
+          onClick={handleClose}
           className="flex text-black cursor-pointer text-2xl font-medium justify-end"
         >
           <IoIosClose />
@@ -58,12 +109,16 @@ const LoginModal: React.FC = () => {
         <h2 className="mb-[18px] flex justify-center text-black">
           BaseBall Community
         </h2>
-        <form className="space-y-4 mb-4">
+        <form
+          onSubmit={handleSubmit(onSubmit, onError)}
+          className="space-y-4 mb-4"
+        >
           <div className="">
             <div className="mb-[12px]">
               <input
                 placeholder="이메일"
-                type="text"
+                type="email"
+                {...register("email", { required: "이메일을 입력하세요." })}
                 className="form-sign-up"
               />
             </div>
@@ -71,6 +126,9 @@ const LoginModal: React.FC = () => {
               <input
                 placeholder="비밀번호"
                 type="password"
+                {...register("password", {
+                  required: "비밀번호를 입력하세요.",
+                })}
                 className="form-sign-up"
               />
             </div>
@@ -101,7 +159,7 @@ const LoginModal: React.FC = () => {
               </form>
             </li>
             <li>
-              <form>
+              <form action={signInWithGoogle}>
                 <button className="google-btn" type="submit">
                   <Image
                     src="/google.png"
