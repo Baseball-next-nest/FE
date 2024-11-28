@@ -69,10 +69,14 @@ export default function Header() {
 
         {session?.user ? (
           <>
-            {session.user.email}
-            {session.user.nickname}
-            <form onSubmit={logout}>
-              <button type="submit">로그아웃</button>
+            {/* {session.user.email} */}
+            <form className="flex items-center" onSubmit={logout}>
+              <span className="mr-2 font-medium">
+                {session.user.nickname}님
+              </span>
+              <button className="login-button" type="submit">
+                로그아웃
+              </button>
             </form>
           </>
         ) : (

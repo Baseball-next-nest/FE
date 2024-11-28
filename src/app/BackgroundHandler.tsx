@@ -17,7 +17,13 @@ export default function BackgroundHandler() {
       if (headerElement) {
         headerElement.style.display = "none";
       }
-    } else {
+    }
+    // else if (pathname === "/community") {
+    //   if (mainElement) {
+    //     mainElement.style.backgroundColor = "black";
+    //   }
+    // }
+    else {
       if (mainElement) {
         mainElement.style.backgroundColor = "";
       }

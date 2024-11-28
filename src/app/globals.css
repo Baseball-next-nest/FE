@@ -40,10 +40,33 @@ body {
   width: 100%;
   display: flex;
 }
-
+.text-neutral-content-weak:visited {
+  color: #8ba2ad;
+}
+.text-neutral-content-weak {
+  color: #8ba2ad;
+}
+.text-neutral-content {
+  color: #8ba2ad;
+}
+.bg-neutral-background-hover {
+  background-color: #8ba2ad;
+}
+.text-24 {
+  font-size: 1.5rem;
+  line-height: 1.75rem;
+}
+.text-18 {
+  font-size: 1.125rem;
+  line-height: 1.5rem;
+}
+.text-12 {
+  font-size: 0.75rem;
+  line-height: 1rem;
+}
 /* sign up modal */
 .login-button {
-  padding: 6px 18px;
+  padding: 6px 12px;
   color: #fff;
   border-radius: 8px;
   background-color: rgb(20, 20, 20);

@@ -96,6 +96,11 @@ export const setNavbarPages = (currentPage: string) => {
       current: currentPage === "/player",
     },
     { name: "일정", href: "/schedule", current: currentPage === "/schedule" },
+    {
+      name: "게시판",
+      href: "/community",
+      current: currentPage === "/community",
+    },
   ];
   useNavbarStore.setState({ pages });
 };

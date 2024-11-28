@@ -5,7 +5,7 @@ interface PlayerGridTableProps {
 }
 export const ContentBox: FC<PlayerGridTableProps> = ({ children }) => {
   return (
-    <div className="border border-[#e2e5e8] overflow-hidden relative mx-[9px] my-[9px]  bg-white">
+    <div className="border border-[#e2e5e8] overflow-hidden relative mx-[9px] my-[9px]  bg-white w-full">
       {children}
     </div>
   );

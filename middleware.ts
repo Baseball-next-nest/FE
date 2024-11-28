@@ -5,7 +5,8 @@ import { getSession } from "@/serverActions/auth"; // import { auth } from '@/au
 
 const matchersForAuth = ["/myaccount/:path", "/users/:path"];
 const matchersForSignIn = ["/signup/:path", "/signin/:path"];
-
+console.log("auth" + matchersForAuth);
+console.log("signin" + matchersForSignIn);
 export async function middleware(request: NextRequest) {
   // 인증이 필요한 페이지 접근 제어!
   if (isMatch(request.nextUrl.pathname, matchersForAuth)) {
