@@ -19,7 +19,7 @@ const Navbar: React.FC = () => {
   }, [currentPage]);
 
   return (
-    <nav className="mx-auto mt-8 flex max-w-screen-xl items-center justify-between">
+    <nav className="mx-auto mt-5 flex max-w-screen-xl items-center justify-between">
       <ul className="container mx-auto flex justify-start space-x-6">
         {pages.map((page) => (
           <li key={page.href}>
