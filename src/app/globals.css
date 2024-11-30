@@ -32,6 +32,10 @@ body {
     text-wrap: balance;
   }
 }
+.border-post {
+  border-width: 0.625rem;
+}
+
 .basic-container {
   color: black;
   padding-top: 2rem;

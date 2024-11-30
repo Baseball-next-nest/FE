@@ -30,7 +30,7 @@ export default function RootLayout({
           {/* <div className="relative">
             <AuthSection />
           </div> */}
-          <main className="px-4 bg-gray-100 ">
+          <main className="px-4 bg-gray-100">
             <BackgroundHandler />
             <div className="mx-auto max-w-screen-xl min-h-screen">
               {children}

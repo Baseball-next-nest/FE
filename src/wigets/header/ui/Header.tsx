@@ -53,7 +53,7 @@ export default function Header() {
   // };
   const { openLoginModal } = useModalStore();
   return (
-    <header className="bg-white p-4 text-black shadow-md">
+    <header className="bg-white p-4 text-black shadow-md sticky top-0 z-50">
       <nav className="mx-auto flex max-w-screen-xl items-center justify-between">
         <div className="flex items-center space-x-4">
           <div className="text-2xl text-black">
