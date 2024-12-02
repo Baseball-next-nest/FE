@@ -6,16 +6,16 @@ import { useEffect, useRef } from "react";
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 
 const teams = [
-  { name: "두산 베어스", logo: "/logos/doosan.svg" },
-  { name: "LG 트윈스", logo: "/logos/lg.svg" },
-  { name: "NC 다이노스", logo: "/logos/nc.svg" },
-  { name: "SSG 랜더스", logo: "/logos/ssg.svg" },
-  { name: "KT 위즈", logo: "/logos/kt.svg" },
-  { name: "KIA 타이거즈", logo: "/logos/kia.svg" },
-  { name: "롯데 자이언츠", logo: "/logos/lotte.svg" },
-  { name: "삼성 라이온즈", logo: "/logos/samsung.svg" },
-  { name: "키움 히어로즈", logo: "/logos/kiwoom.svg" },
-  { name: "한화 이글스", logo: "/logos/hanhwa.png" },
+  { name: "두산 베어스", logo: "/logos/doosan.svg", team: "doosan" },
+  { name: "LG 트윈스", logo: "/logos/lg.svg", team: "lg" },
+  { name: "NC 다이노스", logo: "/logos/nc.svg", team: "nc" },
+  { name: "SSG 랜더스", logo: "/logos/ssg.svg", team: "ssg" },
+  { name: "KT 위즈", logo: "/logos/kt.svg", team: "kt" },
+  { name: "KIA 타이거즈", logo: "/logos/kia.svg", team: "kia" },
+  { name: "롯데 자이언츠", logo: "/logos/lotte.svg", team: "lotte" },
+  { name: "삼성 라이온즈", logo: "/logos/samsung.svg", team: "samsung" },
+  { name: "키움 히어로즈", logo: "/logos/kiwoom.svg", team: "kiwoom" },
+  { name: "한화 이글스", logo: "/logos/hanhwa.png", team: "hanhwa" },
 ];
 
 export default function TeamSelector() {

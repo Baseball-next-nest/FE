@@ -1,38 +1,59 @@
 "use client";
+
 import { useEditorStore } from "@/entities/EditorStore";
+import { useTeamStore } from "@/entities/TeamStore";
 import { CommunityBox } from "@/features/content-box/CommunityBox";
 import TeamSelector from "@/features/select-box/TeamSelector";
 import TextEditor from "@/features/select-box/TextEditor";
 import { useForm } from "react-hook-form";
-import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css";
 export default function post() {
-  const { content, setContent } = useEditorStore(); // Zustand로 상태 관리
+  const { content, setContent } = useEditorStore();
+  const { selectedTeam } = useTeamStore();
+  console.log(content);
   const {
     register,
-    // handleSubmit,
-    // trigger,
-    // setFocus,
+    handleSubmit,
     formState: { errors },
   } = useForm();
+  const onSubmit = (data: { title: string }) => {
+    if (!selectedTeam) {
+      alert("팀을 선택해주세요.");
+      return;
+    }
+
+    const postData = {
+      team: selectedTeam.team,
+      title: data.title,
+      content,
+    };
+
+    console.log("Form Submitted:", postData);
+
+    // 이후 실제 API 호출 코드 추가
+    // await fetch("/api/posts", {
+    //   method: "POST",
+    //   headers: { "Content-Type": "application/json" },
+    //   body: JSON.stringify(postData),
+    // });
+    alert("게시글이 성공적으로 제출되었습니다.");
+  };
   return (
     <CommunityBox>
       {/* 새글쓰기 */}
       <div className="flex self-start items-center ">
-        <h1 className="indent-8 mb-4 text-24 text-neutral-content font-bold ml-6">
+        <h1 className="indent-8 mb-2 text-24 text-neutral-content font-bold ml-6">
           새 글 쓰기
         </h1>
       </div>
       {/* 팀 셀렉트 */}
       <TeamSelector />
-      <div></div>
       {/* 메인 section */}
-      <section className="self-start border-post ml-16 w-full">
-        <form className="flex flex-col p-2" action="">
-          <div className="mb-4">
-            <label className="inline-block font-medium text-[rgb(33,37,41)] break-words cursor-default tap-highlight-transparent text-base mb-2">
+      <section className="self-start ml-12 w-full">
+        <form className="flex flex-col p-2" onSubmit={handleSubmit(onSubmit)}>
+          <div className="mb-2">
+            {/* <label className="inline-block font-medium text-[rgb(33,37,41)] break-words cursor-default tap-highlight-transparent text-base mb-2">
               제목
-            </label>
+            </label> */}
             <input
               placeholder="제목을 입력해주세요."
               className={`form-input-currect ${
@@ -48,9 +69,9 @@ export default function post() {
           </div>
           {/* <div>tag</div> */}
           <div className="mb-4">
-            <label className="inline-block font-medium text-[rgb(33,37,41)] break-words cursor-default tap-highlight-transparent text-base mb-2">
+            {/* <label className="inline-block font-medium text-[rgb(33,37,41)] break-words cursor-default tap-highlight-transparent text-base mb-2">
               본문
-            </label>
+            </label> */}
             <TextEditor value={content} onChange={setContent} />
           </div>
           <div className="self-end">

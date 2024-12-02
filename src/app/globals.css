@@ -35,7 +35,25 @@ body {
 .border-post {
   border-width: 0.625rem;
 }
-
+.quill {
+  border-radius: 0.5rem;
+  border: 1px solid #ccc;
+}
+.quill > .ql-toolbar.ql-snow {
+  border: none;
+}
+.quill > .ql-container.ql-snow {
+  border: none;
+}
+.quill > .ql-container > .ql-editor {
+  min-height: 144px;
+}
+.quill > .ql-container > .ql-editor.ql-blank::before {
+  color: #7c7d7f;
+  font-style: normal;
+  font-size: 14px;
+  pointer-events: none;
+}
 .basic-container {
   color: black;
   padding-top: 2rem;
