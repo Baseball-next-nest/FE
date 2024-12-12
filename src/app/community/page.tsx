@@ -2,6 +2,7 @@ import { Feed } from "@/features/table/CommunityFeed";
 import { PostButton } from "@/features/button/PostButton";
 import { SearchInput } from "@/features/input/SearchInput";
 import { CommunityBox } from "@/features/content-box/CommunityBox";
+import Link from "next/link";
 
 export default function community() {
   return (
@@ -16,7 +17,9 @@ export default function community() {
       <div className="border-t border-gray-300 my-1 w-4/5" />
       {/* table feed section */}
       {/* backend 연결 후 컴포넌트 설정 */}
+
       <Feed />
+
       <div className="border-t border-gray-300 my-1 w-4/5" />
     </CommunityBox>
   );

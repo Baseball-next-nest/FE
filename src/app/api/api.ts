@@ -33,6 +33,12 @@ export async function getPlayerIdData(id: string) {
   return fetcher(`/player/detail?id=${id}`);
 }
 export async function getPlayerNameData(name: string) {
-  console.log(name);
   return fetcher(`/player/search?name=${name}`);
+}
+
+export async function createPost(postData: any) {
+  return fetcher(`/player/pitcher`, {
+    method: "POST",
+    body: JSON.stringify(postData),
+  });
 }

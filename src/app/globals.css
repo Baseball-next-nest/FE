@@ -32,6 +32,15 @@ body {
     text-wrap: balance;
   }
 }
+
+.comment-meta {
+  display: flex;
+  margin-right: 0;
+  flex-direction: column;
+  align-items: flex-start;
+  max-width: 100%;
+  font-size: 0.875rem;
+}
 .border-post {
   border-width: 0.625rem;
 }
@@ -54,6 +63,11 @@ body {
   font-size: 14px;
   pointer-events: none;
 }
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 .basic-container {
   color: black;
   padding-top: 2rem;
@@ -71,6 +85,10 @@ body {
 .text-neutral-content {
   color: #8ba2ad;
 }
+.neutral-content {
+  color: #bbc3cb;
+}
+
 .bg-neutral-background-hover {
   background-color: #8ba2ad;
 }
@@ -81,6 +99,10 @@ body {
 .text-18 {
   font-size: 1.125rem;
   line-height: 1.5rem;
+}
+.text-16 {
+  font-size: 1rem;
+  line-height: 1.25rem;
 }
 .text-12 {
   font-size: 0.75rem;

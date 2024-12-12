@@ -1,41 +1,59 @@
 "use client";
 
+import { createPost } from "@/app/api/api";
 import { useEditorStore } from "@/entities/EditorStore";
+import { useSessionStore } from "@/entities/SessionStore";
 import { useTeamStore } from "@/entities/TeamStore";
 import { CommunityBox } from "@/features/content-box/CommunityBox";
 import TeamSelector from "@/features/select-box/TeamSelector";
 import TextEditor from "@/features/select-box/TextEditor";
+import { getSession } from "@/serverActions/auth";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 export default function post() {
+  const { session, setSession } = useSessionStore();
   const { content, setContent } = useEditorStore();
-  const { selectedTeam } = useTeamStore();
+  const { selectedTeam, selectTeam } = useTeamStore();
   console.log(content);
+  useEffect(() => {
+    const fetchSession = async () => {
+      const sessionData = await getSession();
+      setSession(sessionData);
+    };
+    reset({ title: "", content: "" });
+    setContent("");
+    selectTeam(null);
+    fetchSession();
+  }, []);
   const {
     register,
+    reset,
     handleSubmit,
     formState: { errors },
   } = useForm();
-  const onSubmit = (data: { title: string }) => {
+  const onSubmit = async (data: { title: string }) => {
     if (!selectedTeam) {
       alert("팀을 선택해주세요.");
       return;
     }
-
+    const user = session.user;
     const postData = {
       team: selectedTeam.team,
       title: data.title,
       content,
+      user,
     };
 
     console.log("Form Submitted:", postData);
 
-    // 이후 실제 API 호출 코드 추가
-    // await fetch("/api/posts", {
-    //   method: "POST",
-    //   headers: { "Content-Type": "application/json" },
-    //   body: JSON.stringify(postData),
-    // });
+    await createPost(postData);
+
     alert("게시글이 성공적으로 제출되었습니다.");
+
+    // form 제출후 초기화슨
+    reset({ title: "", content: "" });
+    setContent("");
+    selectTeam(null);
   };
   return (
     <CommunityBox>
@@ -51,9 +69,6 @@ export default function post() {
       <section className="self-start ml-12 w-full">
         <form className="flex flex-col p-2" onSubmit={handleSubmit(onSubmit)}>
           <div className="mb-2">
-            {/* <label className="inline-block font-medium text-[rgb(33,37,41)] break-words cursor-default tap-highlight-transparent text-base mb-2">
-              제목
-            </label> */}
             <input
               placeholder="제목을 입력해주세요."
               className={`form-input-currect ${
@@ -67,11 +82,7 @@ export default function post() {
               <p className="text-red-500">{errors.title.message}</p>
             )}
           </div>
-          {/* <div>tag</div> */}
           <div className="mb-4">
-            {/* <label className="inline-block font-medium text-[rgb(33,37,41)] break-words cursor-default tap-highlight-transparent text-base mb-2">
-              본문
-            </label> */}
             <TextEditor value={content} onChange={setContent} />
           </div>
           <div className="self-end">
