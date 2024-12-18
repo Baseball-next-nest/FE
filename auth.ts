@@ -15,7 +15,7 @@ interface ResponseValue {
     nickname: string; // 사용자 표시 이름
     profileImg?: string | null; // 사용자 프로필 이미지(URL)
   };
-  ㅈ;
+
   accessToken: string; // 사용자 접근 토큰
 }
 
@@ -112,6 +112,7 @@ export const {
       // console.log("session session!! " + JSON.stringify(session));
       session.user.nickname = token.nickname;
       session.user.sid = token.sid;
+      session.user.id = token.id;
       // Object.assign(session, token.signup);
       return session;
     },
