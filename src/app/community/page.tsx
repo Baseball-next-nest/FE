@@ -3,8 +3,11 @@ import { PostButton } from "@/features/button/PostButton";
 import { SearchInput } from "@/features/input/SearchInput";
 import { CommunityBox } from "@/features/content-box/CommunityBox";
 import Link from "next/link";
+import { fetchSectionPosts } from "../api/api";
 
-export default function community() {
+export default async function community() {
+  const fetchPost = await fetchSectionPosts("");
+  console.log(fetchPost);
   return (
     <CommunityBox>
       {/* search section */}
