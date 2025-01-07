@@ -1,42 +1,60 @@
 import clsx from "clsx";
-import { FC } from "react";
+import { FC, useState } from "react";
 import { FaArrowUp, FaArrowDown, FaRegComment, FaShare } from "react-icons/fa";
-interface PostActionRowstProps {}
+interface PostActionRowstProps {
+  className: string;
+  hideShareButton: boolean;
+  onShareClick: () => void;
+}
 
-export const PostActionRows: FC<PostActionRowstProps> = ({ ...props }) => {
+export const PostActionRows: FC<PostActionRowstProps> = ({
+  className,
+  hideShareButton,
+  onShareClick,
+}) => {
   return (
     // className={clsx(
     //   "w-96 rounded-full border border-gray-300 p-2 px-4 py-2 text-sm focus:border-transparent focus:shadow-md focus:outline-none",
     //   className
     // )}
-    <div className="w-4/5 flex gap-2.5 flex-row items-center flex-nowrap overflow-hidden justify-start h-12 mt-4 px-0">
+    <div
+      className={clsx(
+        "w-4/5 flex gap-2.5 flex-row items-center flex-nowrap overflow-hidden justify-start h-12 mt-4 px-0",
+        className
+      )}
+    >
       <span className="relative">
-        <span className="h-8 px-4 p-0 text-12 inline-flex items-center button-shell overflow-visible font-semibold flex items-center cursor-auto">
-          <button className="rounded-[16px] hover:bg-gray-200">
-            <span className="flex mx-1.5 text-16">
-              <FaArrowUp />
+        <span className="h-8 px-4 p-0 text-12 inline-flex items-center button-shell overflow-visible font-semibold flex items-center cursor-auto rounded-[16px]">
+          <button className="rounded-[16px] hover:bg-gray-300">
+            <span className="flex my-1.5 mx-1.5 text-16">
+              <FaArrowUp className="arrow-up" />
             </span>
           </button>
-          <span>297</span>
-          <button className="rounded-[16px] hover:bg-gray-200">
-            <span className="flex mx-1.5 text-16">
-              <FaArrowDown />
+          <span className="">297</span>
+          <button className="rounded-[16px] hover:bg-gray-300">
+            <span className="flex my-1.5 mx-1.5 text-16">
+              <FaArrowDown className="arrow-down" />
             </span>
           </button>
         </span>
       </span>
-      <span className="h-8 px-4 p-0 text-12 inline-flex items-center overflow-visible font-semibold flex items-center cursor-pointer rounded-[16px] hover:bg-gray-200">
+      <span className="h-8 px-4 p-0 text-12 inline-flex items-center overflow-visible font-semibold flex items-center cursor-pointer rounded-[16px] hover:bg-gray-300">
         <span className="mr-1.5">
           <FaRegComment />
         </span>
         <span>61</span>
       </span>
-      <span className="h-8 px-4 p-0 text-12 inline-flex items-center overflow-visible font-semibold flex items-center cursor-pointer rounded-[16px] hover:bg-gray-200">
-        <span className="mr-1.5">
-          <FaShare className="color-white" />
+      {!hideShareButton && (
+        <span
+          onClick={onShareClick}
+          className="h-8 px-4 p-0 text-12 inline-flex items-center overflow-visible font-semibold flex items-center cursor-pointer rounded-[16px] hover:bg-gray-300"
+        >
+          <span className="mr-1.5">
+            <FaShare className="color-white" />
+          </span>
+          <span>공유하기</span>
         </span>
-        <span>공유하기</span>
-      </span>
+      )}
     </div>
   );
 };

@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useEffect, useRef } from "react";
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 
-const teams = [
+export const teams = [
   { name: "두산 베어스", logo: "/logos/doosan.svg", team: "doosan" },
   { name: "LG 트윈스", logo: "/logos/lg.svg", team: "lg" },
   { name: "NC 다이노스", logo: "/logos/nc.svg", team: "nc" },

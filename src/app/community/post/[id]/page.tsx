@@ -1,3 +1,4 @@
+"use client";
 import { CommunityBox } from "@/features/content-box/CommunityBox";
 import { BackButton } from "@/features/button/BackButton";
 import { notFound } from "next/navigation";
@@ -8,28 +9,68 @@ import Image from "next/image";
 import { SearchInput } from "@/features/input/SearchInput";
 import { PostActionRows } from "@/features/rows/PostActionRow";
 import { CommentsActionRows } from "@/features/rows/CommentsActionRows";
-interface PostDetailProps {
-  params: { id: string };
+import { fetchBoardPostById } from "@/app/api/api";
+import { getTeamNameInKorean } from "@/features/func/team";
+import { getRelativeTime } from "@/features/func/date";
+import DropdownMenu from "@/features/button/DropdownMenu";
+import { useEffect, useRef, useState } from "react";
+
+interface PostItem {
+  id: number;
+  title: string;
+  content: string;
+  category: string;
+  createdAt: string;
+  user: { id: number; nickname: string };
 }
 
-// async function fetchPost(id: string) {
-//   const response = await fetch(`https://your-api.com/posts/${id}`, {
-//     cache: "no-store",
-//   });
+interface PostDetailProps {
+  params: { id: number };
+  post: PostItem[];
+}
+export default function PostDetail({ params }: PostDetailProps) {
+  const [post, setPost] = useState<PostItem | null>(null);
+  const [showTooltip, setShowTooltip] = useState(false);
+  const tooltipRef = useRef<HTMLSpanElement | null>(null);
 
-//   if (!response.ok) {
-//     return null;
-//   }
+  const handleShareClick = async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      setShowTooltip(true);
+      setTimeout(() => setShowTooltip(false), 3000);
+    } catch (err) {
+      console.error("링크 복사 실패:", err);
+    }
+  };
+  const postId = params.id;
+  useEffect(() => {
+    const fetchPost = async () => {
+      try {
+        const postId = params.id;
+        const res = await fetchBoardPostById(Number(postId));
+        setPost(res);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchPost();
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        tooltipRef.current &&
+        !tooltipRef.current.contains(event.target as Node)
+      ) {
+        setShowTooltip(false);
+      }
+    };
 
-//   return response.json();
-// }
-
-export default async function PostDetail({ params }: PostDetailProps) {
-  // const post = await fetchPost(params.id);
-
-  // if (!post) {
-  //   return notFound();
-  // }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [params.id]);
+  if (!post) {
+    return <div>게시글을 찾을 수 없습니다.</div>;
+  }
 
   return (
     <CommunityBox>
@@ -38,8 +79,12 @@ export default async function PostDetail({ params }: PostDetailProps) {
           <BackButton />
           <div className="flex mr-1 text-32 items-center overflow-hidden flex-shrink-0 indent-0 w-8 h-8">
             <Image
-              src="/logos/doosan.svg"
-              alt="doosan"
+              src={`/logos/${
+                post.category === "hanwha"
+                  ? "hanwha.png"
+                  : `${post.category}.svg`
+              }`}
+              alt={post.category}
               width={32}
               height={32}
             />
@@ -47,13 +92,13 @@ export default async function PostDetail({ params }: PostDetailProps) {
           <div className="flex gap-0 flex-col truncate">
             <span className="flex flex-none items-center flex-row gap-1 flex-nowrap">
               <span className="flex flex-none neutral-content font-bold text-12 whitespace-nowrap">
-                두산 베어스
+                {getTeamNameInKorean(post.category)}
               </span>
               <span className="flex items-center w-1 text-neutral-content-weak font-normal text-12">
                 ·
               </span>
               <span className="flex items-center whitespace-nowrap text-neutral-content-weak font-normal text-12">
-                2일전
+                {getRelativeTime(post.createdAt)}
               </span>
             </span>
             <div className="flex flex-none flex-row gap-1 items-center flex-nowrap">
@@ -62,22 +107,31 @@ export default async function PostDetail({ params }: PostDetailProps) {
           </div>
         </span>
         <span className="w-[32px] h-[32px] flex items-center pb-1 cursor-pointer">
-          <CiMenuKebab className="w-[24px] h-[24px]" />
+          <DropdownMenu postId={postId} />
+          {/* <CiMenuKebab className="w-[24px] h-[24px]" /> */}
         </span>
       </div>
-      <h1 className="w-4/5 text-left font-semibold text-neutral-content-strong m-0 text-18 xs:text-24  mb-4  overflow-hidden">
-        두산베어스 화이팅 두산베어스 화이팅 두산베어스 화이팅 두산베어스 화이팅
+      <h1 className="w-4/5 text-center font-semibold text-neutral-content-strong m-0 text-18 xs:text-24  mb-4  overflow-hidden">
+        {post.title}
       </h1>
 
-      <div className="relative overflow-hidden pointer-cursor mb-2 isolate bg-neutral-background xs:rounded-[16px]">
-        Lorem ipsum dolor sit amet consectetur, adipisicing elit. Veritatis
-        corporis ad error perspiciatis, eaque dignissimos ex ullam saepe enim
-        aut minus architecto similique blanditiis consectetur eligendi quia?
-        Excepturi, unde ex?
-      </div>
+      <div
+        className="relative overflow-hidden pointer-cursor mb-2 bg-neutral-background xs:rounded-[16px]"
+        dangerouslySetInnerHTML={{ __html: post.content }}
+      ></div>
       {/* 잡다기능버튼들 */}
-      <PostActionRows />
-
+      <PostActionRows onShareClick={handleShareClick} />
+      <div className="relative w-full">
+        {showTooltip && (
+          <span
+            ref={tooltipRef}
+            onClick={() => setShowTooltip(false)}
+            className="absolute tooltip-position transform -translate-x-1/2 bg-neutral-700 text-white text-xs py-1 px-2 rounded shadow-md"
+          >
+            링크가 복사되었습니다!
+          </span>
+        )}
+      </div>
       {/* 댓글 */}
       <div className="relative w-full flex items-center justify-center mt-8">
         <SearchInput

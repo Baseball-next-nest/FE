@@ -10,11 +10,12 @@ import {
 } from "react-icons/fa";
 interface CommentsActionRowstProps {
   className?: string;
+  // hideSharButton: boolean
 }
 
 export const CommentsActionRows: FC<CommentsActionRowstProps> = ({
   className,
-  ...props
+  // hideShareButton,
 }) => {
   return (
     // className={clsx(
@@ -48,12 +49,12 @@ export const CommentsActionRows: FC<CommentsActionRowstProps> = ({
         </span>
         <span>답변</span>
       </span>
-      <span className="h-8 px-2 p-0 text-12 inline-flex items-center overflow-visible font-semibold flex items-center cursor-pointer rounded-[16px] hover:bg-gray-200">
+      {/* <span className="h-8 px-2 p-0 text-12 inline-flex items-center overflow-visible font-semibold flex items-center cursor-pointer rounded-[16px] hover:bg-gray-200">
         <span className="mr-1.5">
           <FaShare className="color-white" />
         </span>
         <span>공유하기</span>
-      </span>
+      </span> */}
     </div>
   );
 };

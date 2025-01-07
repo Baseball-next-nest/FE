@@ -7,6 +7,7 @@ import BackgroundHandler from "./BackgroundHandler";
 import AuthSection from "@/wigets/header/ui/AuthSection";
 import { SessionProvider } from "@/providers/session";
 import LoginModal from "@/wigets/header/LoginModal";
+import LoadingSpinner from "@/features/loading/Loading";
 
 const NOTO_SANS_KR = Noto_Sans_KR({
   preload: true,
@@ -25,6 +26,7 @@ export default function RootLayout({
     <html lang="ko">
       <body className={NOTO_SANS_KR.className}>
         <SessionProvider>
+          <LoadingSpinner />
           <Header />
           <LoginModal />
           {/* <div className="relative">

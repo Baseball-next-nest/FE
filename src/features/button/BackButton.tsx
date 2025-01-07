@@ -4,7 +4,7 @@ import { IoMdArrowBack } from "react-icons/io";
 export const BackButton = () => {
   const router = useRouter();
   const backToCommunity = () => {
-    router.back();
+    router.push("/community");
   };
   return (
     <button

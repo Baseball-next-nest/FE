@@ -1,90 +1,95 @@
 "use client";
-
-import { createPost } from "@/app/api/api";
+import { fetchBoardPostById, updatePost } from "@/app/api/api";
 import { useEditorStore } from "@/entities/EditorStore";
 import useLoadingStore from "@/entities/LoadingStore";
-import { useSessionStore } from "@/entities/SessionStore";
 import { useTeamStore } from "@/entities/TeamStore";
 import { CommunityBox } from "@/features/content-box/CommunityBox";
 import LoadingSpinner from "@/features/loading/Loading";
-import TeamSelector from "@/features/select-box/TeamSelector";
-import { getSession } from "@/serverActions/auth";
-import dynamic from "next/dynamic";
+import TeamSelector, { teams } from "@/features/select-box/TeamSelector";
+import TextEditor from "@/features/select-box/TextEditor";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
+import { mutate } from "swr";
 
-const TextEditor = dynamic(() => import("@/features/select-box/TextEditor"), {
-  ssr: false,
-});
-
-export default function post() {
-  const { session, setSession } = useSessionStore();
+interface EditDetailProps {
+  params: { id: number };
+}
+export default function EditPage({ params }: EditDetailProps) {
   const { content, setContent } = useEditorStore();
   const { selectedTeam, selectTeam } = useTeamStore();
   const { setLoading } = useLoadingStore();
-  // console.log(content);
   const router = useRouter();
+  // const params = useParams();
 
-  useEffect(() => {
-    const fetchSession = async () => {
-      const sessionData = await getSession();
-      setSession(sessionData);
-    };
-    reset({ title: "", content: "" });
-    setContent("");
-    selectTeam(null);
-    fetchSession();
-  }, []);
   const {
     register,
     reset,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm();
+
+  useEffect(() => {
+    const fetchPost = async () => {
+      try {
+        setLoading(true);
+        const post = await fetchBoardPostById(Number(params.id));
+        console.log(post);
+        reset({
+          title: post.title,
+        });
+        setContent(post.content);
+        const team = teams.find(
+          (team) => team.team === post.category.toLowerCase()
+        );
+
+        selectTeam(team || null);
+      } catch (err) {
+        console.error("Failed to fetch post:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPost();
+  }, [params.id, reset, setContent, selectTeam, setLoading]);
+
   const onSubmit = async (data: { title: string }) => {
     if (!selectedTeam) {
-      alert("팀을 선택해주세요.");
+      alert("팀을 선택해주세요");
       return;
     }
-    const user = session.user.id;
-    console.log(user);
-    const postData = {
+
+    const updatedPost = {
+      postId: Number(params.id),
       category: selectedTeam.team,
       title: data.title,
       content,
-      user_id: Number(user),
     };
-    console.log("Form Submitted:", postData);
+
     try {
       setLoading(true);
-      await createPost(postData);
-      alert("게시물이 등록되었습니다.");
-      router.push("/community");
-      // form 제출후 초기화슨
-      reset({ title: "", content: "" });
-      setContent("");
-      selectTeam(null);
+      await updatePost(updatedPost);
+      router.push(`/community/post/${params.id}`);
+      // alert("게시물이 수정되었습니다.");
     } catch (err) {
-      alert("게시물 작성실패.");
-      console.error("Error submitting post:", err);
-      return;
+      console.error("Error updating post:", err);
+      alert("게시물 수정에 실패했습니다.");
     } finally {
       setLoading(false);
     }
   };
+
   return (
     <CommunityBox>
       <LoadingSpinner />
-      {/* 새글쓰기 */}
       <div className="flex self-start items-center ">
         <h1 className="indent-8 mb-2 text-24 text-neutral-content font-bold ml-6">
-          새 글 쓰기
+          글 수정하기
         </h1>
       </div>
-      {/* 팀 셀렉트 */}
       <TeamSelector />
-      {/* 메인 section */}
       <section className="self-start ml-12 w-full">
         <form className="flex flex-col p-2" onSubmit={handleSubmit(onSubmit)}>
           <div className="mb-2">
@@ -109,7 +114,7 @@ export default function post() {
               type="submit"
               className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 mr-2"
             >
-              게시
+              수정
             </button>
           </div>
         </form>

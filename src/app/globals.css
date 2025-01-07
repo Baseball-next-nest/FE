@@ -33,6 +33,31 @@ body {
   }
 }
 
+.tooltip-position {
+  top: -0.9rem;
+  left: 42%;
+  transition: 0.1s ease !important;
+}
+.arrow-up {
+  fill: #8ba2ad;
+  /* fill: #fff; */
+}
+.arrow-up:hover {
+  fill: rgb(242, 66, 66);
+}
+.arrow-down {
+  fill: #8ba2ad;
+}
+.arrow-down:hover {
+  fill: rgb(75, 75, 241);
+}
+.image-restrict {
+  max-width: 100%;
+  height: auto;
+  max-height: 300px;
+  object-fit: contain;
+}
+
 .comment-meta {
   display: flex;
   margin-right: 0;

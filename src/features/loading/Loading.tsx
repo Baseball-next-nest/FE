@@ -1,3 +1,4 @@
+"use client";
 import useLoadingStore from "@/entities/LoadingStore";
 
 const LoadingSpinner = () => {
