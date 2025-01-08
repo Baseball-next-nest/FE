@@ -54,7 +54,11 @@ export const Feed: FC<CommunityFeedProps> = ({ Feed }) => {
                 ></div>
               </div>
             </Link>
-            <PostActionRows className="w-full !mt-2" hideShareButton={true} />
+            <PostActionRows
+              id={item.id}
+              className="w-full !mt-2"
+              hideShareButton={true}
+            />
           </div>
         </div>
       ))}

@@ -24,9 +24,6 @@ export default function community() {
 
     fetchPosts();
   }, []);
-
-  // const fetchPost = await fetchSectionPosts("");
-  // console.log(fetchPost);
   return (
     <CommunityBox>
       {/* search section */}

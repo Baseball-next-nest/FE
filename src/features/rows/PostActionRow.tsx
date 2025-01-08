@@ -1,14 +1,17 @@
 import clsx from "clsx";
+import Link from "next/link";
 import { FC, useState } from "react";
 import { FaArrowUp, FaArrowDown, FaRegComment, FaShare } from "react-icons/fa";
 interface PostActionRowstProps {
   className: string;
+  id: number;
   hideShareButton: boolean;
   onShareClick: () => void;
 }
 
 export const PostActionRows: FC<PostActionRowstProps> = ({
   className,
+  id,
   hideShareButton,
   onShareClick,
 }) => {
@@ -38,12 +41,28 @@ export const PostActionRows: FC<PostActionRowstProps> = ({
           </button>
         </span>
       </span>
-      <span className="h-8 px-4 p-0 text-12 inline-flex items-center overflow-visible font-semibold flex items-center cursor-pointer rounded-[16px] hover:bg-gray-300">
-        <span className="mr-1.5">
-          <FaRegComment />
+
+      {id ? (
+        <span>
+          <Link
+            className="h-8 px-4 p-0 text-12 inline-flex items-center overflow-visible font-semibold flex items-center cursor-pointer rounded-[16px] hover:bg-gray-300"
+            href={`/community/post/${id}`}
+          >
+            <span className="mr-1.5">
+              <FaRegComment />
+            </span>
+            <span>{id}</span>
+          </Link>
         </span>
-        <span>61</span>
-      </span>
+      ) : (
+        <span className="h-8 px-4 p-0 text-12 inline-flex items-center overflow-visible font-semibold flex items-center cursor-pointer rounded-[16px] hover:bg-gray-300">
+          <span className="mr-1.5">
+            <FaRegComment />
+          </span>
+          <span>11</span>
+        </span>
+      )}
+
       {!hideShareButton && (
         <span
           onClick={onShareClick}
