@@ -1,9 +1,6 @@
 "use client";
 import { CommunityBox } from "@/features/content-box/CommunityBox";
 import { BackButton } from "@/features/button/BackButton";
-import { notFound } from "next/navigation";
-import { IoMdArrowBack } from "react-icons/io";
-import { CiMenuKebab } from "react-icons/ci";
 
 import Image from "next/image";
 import { SearchInput } from "@/features/input/SearchInput";
@@ -14,22 +11,24 @@ import { getTeamNameInKorean } from "@/features/func/team";
 import { getRelativeTime } from "@/features/func/date";
 import DropdownMenu from "@/features/button/DropdownMenu";
 import { useEffect, useRef, useState } from "react";
+import { useFeedStore } from "@/entities/FeedStore";
 
-interface PostItem {
-  id: number;
-  title: string;
-  content: string;
-  category: string;
-  createdAt: string;
-  user: { id: number; nickname: string };
-}
+// interface PostItem {
+//   id: number;
+//   title: string;
+//   content: string;
+//   category: string;
+//   createdAt: string;
+//   user: { id: number; nickname: string };
+// }
 
 interface PostDetailProps {
   params: { id: number };
-  post: PostItem[];
+  feed: FeedItem[];
 }
 export default function PostDetail({ params }: PostDetailProps) {
-  const [post, setPost] = useState<PostItem | null>(null);
+  const { feed, setFeed } = useFeedStore();
+  // const [post, setPost] = useState<PostItem | null>(null);
   const [showTooltip, setShowTooltip] = useState(false);
   const tooltipRef = useRef<HTMLSpanElement | null>(null);
 
@@ -37,7 +36,7 @@ export default function PostDetail({ params }: PostDetailProps) {
     try {
       await navigator.clipboard.writeText(window.location.href);
       setShowTooltip(true);
-      setTimeout(() => setShowTooltip(false), 3000);
+      setTimeout(() => setShowTooltip(false), 2300);
     } catch (err) {
       console.error("링크 복사 실패:", err);
     }
@@ -48,7 +47,8 @@ export default function PostDetail({ params }: PostDetailProps) {
       try {
         const postId = params.id;
         const res = await fetchBoardPostById(Number(postId));
-        setPost(res);
+        setFeed(res);
+        // setPost(res);
       } catch (err) {
         console.error(err);
       }
@@ -68,7 +68,7 @@ export default function PostDetail({ params }: PostDetailProps) {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [params.id]);
-  if (!post) {
+  if (!feed) {
     return <div>게시글을 찾을 수 없습니다.</div>;
   }
 
@@ -80,11 +80,11 @@ export default function PostDetail({ params }: PostDetailProps) {
           <div className="flex mr-1 text-32 items-center overflow-hidden flex-shrink-0 indent-0 w-8 h-8">
             <Image
               src={`/logos/${
-                post.category === "hanwha"
+                feed.category === "hanwha"
                   ? "hanwha.png"
-                  : `${post.category}.svg`
+                  : `${feed.category}.svg`
               }`}
-              alt={post.category}
+              alt={feed.category}
               width={32}
               height={32}
             />
@@ -92,13 +92,13 @@ export default function PostDetail({ params }: PostDetailProps) {
           <div className="flex gap-0 flex-col truncate">
             <span className="flex flex-none items-center flex-row gap-1 flex-nowrap">
               <span className="flex flex-none neutral-content font-bold text-12 whitespace-nowrap">
-                {getTeamNameInKorean(post.category)}
+                {getTeamNameInKorean(feed.category)}
               </span>
               <span className="flex items-center w-1 text-neutral-content-weak font-normal text-12">
                 ·
               </span>
               <span className="flex items-center whitespace-nowrap text-neutral-content-weak font-normal text-12">
-                {getRelativeTime(post.createdAt)}
+                {getRelativeTime(feed.createdAt)}
               </span>
             </span>
             <div className="flex flex-none flex-row gap-1 items-center flex-nowrap">
@@ -112,12 +112,12 @@ export default function PostDetail({ params }: PostDetailProps) {
         </span>
       </div>
       <h1 className="w-4/5 text-center font-semibold text-neutral-content-strong m-0 text-18 xs:text-24  mb-4  overflow-hidden">
-        {post.title}
+        {feed.title}
       </h1>
 
       <div
         className="relative overflow-hidden pointer-cursor mb-2 bg-neutral-background xs:rounded-[16px]"
-        dangerouslySetInnerHTML={{ __html: post.content }}
+        dangerouslySetInnerHTML={{ __html: feed.content }}
       ></div>
       {/* 잡다기능버튼들 */}
       <PostActionRows onShareClick={handleShareClick} />

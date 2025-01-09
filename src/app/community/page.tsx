@@ -5,25 +5,31 @@ import { SearchInput } from "@/features/input/SearchInput";
 import { CommunityBox } from "@/features/content-box/CommunityBox";
 import Link from "next/link";
 import { fetchSectionPosts } from "../api/api";
-import { useEffect, useState } from "react";
+import { FC, useEffect, useState } from "react";
+import { useFeedStore } from "@/entities/FeedStore";
+import { useSessionStore } from "@/entities/SessionStore";
+import { getSession } from "@/serverActions/auth";
 
 export default function community() {
-  // export default async function community() {
-  const [posts, setPosts] = useState([]);
-
+  const { feed, setFeed } = useFeedStore();
+  const { session } = useSessionStore();
+  // console.log(session);
   useEffect(() => {
-    const fetchPosts = async () => {
+    if (!session || !session.user) return;
+
+    const userId = session.user.id;
+
+    const fetchFeed = async () => {
       try {
-        const res = await fetchSectionPosts("");
-        console.log(res);
-        setPosts(res);
-      } catch (err) {
-        console.error(err);
+        const res = await fetchSectionPosts(userId);
+        setFeed(res);
+      } catch (error) {
+        console.error("Failed to fetch feed:", error);
       }
     };
 
-    fetchPosts();
-  }, []);
+    fetchFeed();
+  }, [session, setFeed]);
   return (
     <CommunityBox>
       {/* search section */}
@@ -37,7 +43,7 @@ export default function community() {
       {/* table feed section */}
       {/* backend 연결 후 컴포넌트 설정 */}
 
-      <Feed Feed={posts} />
+      <Feed Feed={feed} />
 
       <div className="border-t border-gray-300 my-1 w-4/5" />
     </CommunityBox>

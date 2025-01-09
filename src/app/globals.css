@@ -38,6 +38,15 @@ body {
   left: 42%;
   transition: 0.1s ease !important;
 }
+.up-vote {
+  background-color: #d93900;
+}
+.down-vote {
+  background-color: #6a5cff;
+}
+.arrow-selected {
+  fill: #fff !important;
+}
 .arrow-up {
   fill: #8ba2ad;
   /* fill: #fff; */

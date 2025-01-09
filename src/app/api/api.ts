@@ -73,8 +73,8 @@ export async function uploadFiles(file: any) {
   });
 }
 
-export async function fetchSectionPosts(section: string) {
-  return fetcher(`/community?section=${section}`);
+export async function fetchSectionPosts(id: number) {
+  return fetcher(`/community?userId=${id}`);
 }
 
 export async function fetchBoardPostById(id: number) {
@@ -87,5 +87,14 @@ export async function deleteCommunityPost(id: number) {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({ postId: id }),
+  });
+}
+export async function updateVote(like: any) {
+  return fetcher(`/community/updown`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(like),
   });
 }

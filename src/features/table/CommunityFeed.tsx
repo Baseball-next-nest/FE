@@ -4,20 +4,11 @@ import { getRelativeTime } from "../func/date";
 import { getTeamNameInKorean } from "../func/team";
 import { PostActionRows } from "../rows/PostActionRow";
 
-interface FeedItem {
-  id: number;
-  title: string;
-  content: string;
-  category: string;
-  createdAt: string;
-  user: { id: number; nickname: string };
-}
-
-interface CommunityFeedProps {
+interface FeedProps {
   Feed: FeedItem[];
 }
 
-export const Feed: FC<CommunityFeedProps> = ({ Feed }) => {
+export const Feed: FC<FeedProps> = ({ Feed }) => {
   console.log(Feed);
   return (
     <div className="w-full flex flex-col gap-4 cursor-pointer items-center">
