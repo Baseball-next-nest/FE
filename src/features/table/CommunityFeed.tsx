@@ -9,7 +9,7 @@ interface FeedProps {
 }
 
 export const Feed: FC<FeedProps> = ({ Feed }) => {
-  console.log(Feed);
+  // console.log(Feed);
   return (
     <div className="w-full flex flex-col gap-4 cursor-pointer items-center">
       {Feed.map((item) => (

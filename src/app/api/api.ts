@@ -3,12 +3,22 @@ import useLoadingStore from "@/entities/LoadingStore";
 export const BASE_URL =
   process.env.NEXT_PUBLIC_API_BASE_URL || "http://13.209.70.240:3000";
 
-async function fetcher(url: string, options?: RequestInit) {
-  const { headers: customHeaders, ...restOptions } = options || {};
-  const { setLoading } = useLoadingStore.getState();
+async function fetcher(
+  url: string,
+  options?: RequestInit & { disableLoading?: boolean }
+) {
+  const {
+    headers: customHeaders,
+    disableLoading,
+    ...restOptions
+  } = options || {};
+  const { isLoading, setLoading } = useLoadingStore.getState();
 
   const isJSON = customHeaders?.["Content-Type"] === "application/json";
-  setLoading(true); // 로딩 시작
+  // if (!disableLoading) {
+  // }
+  setLoading(true);
+
   try {
     const res = await fetch(`${BASE_URL}${url}`, {
       ...restOptions,
@@ -29,7 +39,9 @@ async function fetcher(url: string, options?: RequestInit) {
   } catch (error) {
     throw error;
   } finally {
-    setLoading(false); // 로딩 종료
+    setLoading(false);
+    // if (!disableLoading) {
+    // }
   }
 }
 
@@ -96,5 +108,6 @@ export async function updateVote(like: any) {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(like),
+    disableLoading: true,
   });
 }

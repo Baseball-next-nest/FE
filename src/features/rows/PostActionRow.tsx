@@ -1,6 +1,7 @@
 // "use client";
-import { updateVote } from "@/app/api/api";
+import { fetchSectionPosts, updateVote } from "@/app/api/api";
 import { useFeedStore } from "@/entities/FeedStore";
+import useLoadingStore from "@/entities/LoadingStore";
 import clsx from "clsx";
 import Link from "next/link";
 import { FC, useEffect, useRef, useState } from "react";
@@ -12,6 +13,8 @@ interface PostActionRowstProps {
   onShareClick?: () => void;
 }
 
+// like 배열은 id돌려서 같은거면 + - 불가능,
+
 export const PostActionRows: FC<PostActionRowstProps> = ({
   className,
   id,
@@ -19,67 +22,84 @@ export const PostActionRows: FC<PostActionRowstProps> = ({
   onShareClick,
 }) => {
   const [likeState, setLikeState] = useState("");
+  const { setLoading } = useLoadingStore.getState();
   const { feed, updateLikeState } = useFeedStore();
-  const post = feed.find((item) => item.id === id);
+  const post = useFeedStore.getState().feed.find((item) => item.id === id);
   const initialLikeCountRef = useRef(post.likeCount);
   if (!post) return null;
 
   useEffect(() => {
+    const updatedPost = feed.find((item) => item.id === id);
+    setLoading(false);
     setLikeState(post.isLiked);
-  }, []);
-
+  }, [feed, setLoading]);
   const updatePostVoteState = async (newVoteState: "up" | "down" | "none") => {
-    const { likeCount, isLiked } = post;
+    const updatedPost = useFeedStore
+      .getState()
+      .feed.find((item) => item.id === id);
 
+    if (!updatedPost) return;
+
+    const { likeCount, isLiked } = updatedPost;
     const initialLikeCount = initialLikeCountRef.current;
 
-    let updatedLikeState = isLiked;
+    let updatedLikeState: "up" | "down" | "none" = isLiked;
     let updatedLikeCount = likeCount;
 
-    // 기본 상태
-    if (isLiked === null || isLiked === "none") {
-      updatedLikeState = newVoteState;
-      updatedLikeCount =
-        newVoteState === "up"
-          ? Math.min(initialLikeCount + 1, likeCount + 1)
-          : Math.max(initialLikeCount - 1, likeCount - 1);
-    } else if (isLiked === newVoteState) {
-      // 동일
-      updatedLikeState = "none";
-      updatedLikeCount = initialLikeCount;
-    } else {
-      // 반대
-      updatedLikeState = newVoteState;
-      updatedLikeCount =
-        newVoteState === "up" ? initialLikeCount + 1 : initialLikeCount - 1;
-    }
-    console.log(updatedLikeState);
-    console.log(updatedLikeCount);
-    console.log(initialLikeCount);
-    const returnCase =
-      updatedLikeCount > initialLikeCount + 1 ||
-      updatedLikeCount < initialLikeCount - 1;
-    if (returnCase) {
-      return;
-    }
+    // 업데이트된 상태와 카운트를 계산하는 함수
+    const calculateLikeState = () => {
+      if (isLiked === null || isLiked === "none") {
+        // 초기
+        return {
+          updatedState: newVoteState,
+          updatedCount:
+            newVoteState === "up"
+              ? Math.min(updatedLikeCount + 1, likeCount + 1)
+              : Math.max(updatedLikeCount - 1, likeCount - 1),
+        };
+      } else if (isLiked === newVoteState) {
+        // 동일
+        return {
+          updatedState: "none",
+          updatedCount:
+            newVoteState === "up" ? updatedLikeCount - 1 : updatedLikeCount + 1,
+        };
+      } else {
+        // 반대
+        return {
+          updatedState: newVoteState,
+          updatedCount:
+            newVoteState === "up" ? updatedLikeCount + 2 : updatedLikeCount - 2,
+        };
+      }
+    };
+
+    // 상태 계산
+    const { updatedState, updatedCount } = calculateLikeState();
+
+    // 업데이트된 상태와 카운트를 적용
+    updatedLikeState = updatedState;
+    updatedLikeCount = updatedCount;
 
     // 상태 업데이트
     setLikeState(updatedLikeState);
     updateLikeState(id, updatedLikeState, updatedLikeCount);
+
     const likeData = {
       post_id: id,
       user_id: post.user.id,
       up_down: updatedLikeState,
     };
-    console.log(likeData);
+
     try {
       await updateVote(likeData);
     } catch (error) {
       console.error("Error updating vote state:", error);
-      // 실패시 원복
+      // 실패 시 원복
       updateLikeState(id, isLiked, likeCount);
     }
   };
+
   return (
     <div
       className={clsx(
