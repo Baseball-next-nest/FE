@@ -2,6 +2,7 @@
 import { fetchSectionPosts, updateVote } from "@/app/api/api";
 import { useFeedStore } from "@/entities/FeedStore";
 import useLoadingStore from "@/entities/LoadingStore";
+import { useSessionStore } from "@/entities/SessionStore";
 import clsx from "clsx";
 import Link from "next/link";
 import { FC, useEffect, useRef, useState } from "react";
@@ -22,6 +23,7 @@ export const PostActionRows: FC<PostActionRowstProps> = ({
   onShareClick,
 }) => {
   const [likeState, setLikeState] = useState("");
+  const { session } = useSessionStore();
   const { setLoading } = useLoadingStore.getState();
   const { feed, updateLikeState } = useFeedStore();
   const post = useFeedStore.getState().feed.find((item) => item.id === id);
@@ -87,10 +89,9 @@ export const PostActionRows: FC<PostActionRowstProps> = ({
 
     const likeData = {
       post_id: id,
-      user_id: post.user.id,
+      user_id: Number(session.user.id),
       up_down: updatedLikeState,
     };
-
     try {
       await updateVote(likeData);
     } catch (error) {
