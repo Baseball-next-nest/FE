@@ -12,22 +12,16 @@ import { getRelativeTime } from "@/features/func/date";
 import DropdownMenu from "@/features/button/DropdownMenu";
 import { useEffect, useRef, useState } from "react";
 import { useFeedStore } from "@/entities/FeedStore";
-
-// interface PostItem {
-//   id: number;
-//   title: string;
-//   content: string;
-//   category: string;
-//   createdAt: string;
-//   user: { id: number; nickname: string };
-// }
+import { usePostStore } from "@/entities/PostStore";
+import { useSessionStore } from "@/entities/SessionStore";
 
 interface PostDetailProps {
   params: { id: number };
   feed: FeedItem[];
 }
 export default function PostDetail({ params }: PostDetailProps) {
-  const { feed, setFeed } = useFeedStore();
+  const { post, setPost } = usePostStore();
+  const { session } = useSessionStore();
   // const [post, setPost] = useState<PostItem | null>(null);
   const [showTooltip, setShowTooltip] = useState(false);
   const tooltipRef = useRef<HTMLSpanElement | null>(null);
@@ -45,9 +39,14 @@ export default function PostDetail({ params }: PostDetailProps) {
   useEffect(() => {
     const fetchPost = async () => {
       try {
+        if (!session || !session.user) return;
+
+        console.log(session);
+        const userId = session.user.id;
+        // const userId = session.user.id;
         const postId = params.id;
-        const res = await fetchBoardPostById(Number(postId));
-        setFeed(res);
+        const res = await fetchBoardPostById(Number(postId), Number(userId));
+        setPost(res);
         // setPost(res);
       } catch (err) {
         console.error(err);
@@ -67,8 +66,8 @@ export default function PostDetail({ params }: PostDetailProps) {
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [params.id]);
-  if (!feed) {
+  }, [session, params.id]);
+  if (!post) {
     return <div>게시글을 찾을 수 없습니다.</div>;
   }
 
@@ -80,11 +79,11 @@ export default function PostDetail({ params }: PostDetailProps) {
           <div className="flex mr-1 text-32 items-center overflow-hidden flex-shrink-0 indent-0 w-8 h-8">
             <Image
               src={`/logos/${
-                feed.category === "hanwha"
+                post.category === "hanwha"
                   ? "hanwha.png"
-                  : `${feed.category}.svg`
+                  : `${post.category}.svg`
               }`}
-              alt={feed.category}
+              alt={post.category}
               width={32}
               height={32}
             />
@@ -92,13 +91,13 @@ export default function PostDetail({ params }: PostDetailProps) {
           <div className="flex gap-0 flex-col truncate">
             <span className="flex flex-none items-center flex-row gap-1 flex-nowrap">
               <span className="flex flex-none neutral-content font-bold text-12 whitespace-nowrap">
-                {getTeamNameInKorean(feed.category)}
+                {getTeamNameInKorean(post.category)}
               </span>
               <span className="flex items-center w-1 text-neutral-content-weak font-normal text-12">
                 ·
               </span>
               <span className="flex items-center whitespace-nowrap text-neutral-content-weak font-normal text-12">
-                {getRelativeTime(feed.createdAt)}
+                {getRelativeTime(post.createdAt)}
               </span>
             </span>
             <div className="flex flex-none flex-row gap-1 items-center flex-nowrap">
@@ -112,15 +111,19 @@ export default function PostDetail({ params }: PostDetailProps) {
         </span>
       </div>
       <h1 className="w-4/5 text-center font-semibold text-neutral-content-strong m-0 text-18 xs:text-24  mb-4  overflow-hidden">
-        {feed.title}
+        {post.title}
       </h1>
 
       <div
         className="relative overflow-hidden pointer-cursor mb-2 bg-neutral-background xs:rounded-[16px]"
-        dangerouslySetInnerHTML={{ __html: feed.content }}
+        dangerouslySetInnerHTML={{ __html: post.content }}
       ></div>
       {/* 잡다기능버튼들 */}
-      <PostActionRows onShareClick={handleShareClick} />
+      <PostActionRows
+        id={params.id}
+        isFeed={false}
+        onShareClick={handleShareClick}
+      />
       <div className="relative w-full">
         {showTooltip && (
           <span

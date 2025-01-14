@@ -89,8 +89,10 @@ export async function fetchSectionPosts(id: number) {
   return fetcher(`/community?userId=${id}`);
 }
 
-export async function fetchBoardPostById(id: number) {
-  return fetcher(`/community/one?id=${id}`, { next: { revalidate: 1 } });
+export async function fetchBoardPostById(id: number, userId: number) {
+  return fetcher(`/community/one?id=${id}&userId=${userId}`, {
+    next: { revalidate: 1 },
+  });
 }
 export async function deleteCommunityPost(id: number) {
   return fetcher(`/community/delete`, {

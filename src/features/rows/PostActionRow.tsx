@@ -2,6 +2,7 @@
 import { fetchSectionPosts, updateVote } from "@/app/api/api";
 import { useFeedStore } from "@/entities/FeedStore";
 import useLoadingStore from "@/entities/LoadingStore";
+import { usePostStore } from "@/entities/PostStore";
 import { useSessionStore } from "@/entities/SessionStore";
 import clsx from "clsx";
 import Link from "next/link";
@@ -11,6 +12,7 @@ interface PostActionRowstProps {
   className?: string;
   id?: number;
   hideShareButton?: boolean;
+  isFeed?: boolean;
   onShareClick?: () => void;
 }
 
@@ -20,25 +22,30 @@ export const PostActionRows: FC<PostActionRowstProps> = ({
   className,
   id,
   hideShareButton,
+  isFeed,
   onShareClick,
 }) => {
   const [likeState, setLikeState] = useState("");
   const { session } = useSessionStore();
   const { setLoading } = useLoadingStore.getState();
   const { feed, updateLikeState } = useFeedStore();
-  const post = useFeedStore.getState().feed.find((item) => item.id === id);
+  const { updatePostLikeState } = usePostStore();
+  const post = isFeed
+    ? useFeedStore.getState().feed.find((item) => item.id === id)
+    : usePostStore.getState().post;
   const initialLikeCountRef = useRef(post.likeCount);
+  console.log(post);
   if (!post) return null;
 
   useEffect(() => {
-    const updatedPost = feed.find((item) => item.id === id);
+    // const updatedPost = feed.find((item) => item.id === id);
     setLoading(false);
     setLikeState(post.isLiked);
   }, [feed, setLoading]);
   const updatePostVoteState = async (newVoteState: "up" | "down" | "none") => {
-    const updatedPost = useFeedStore
-      .getState()
-      .feed.find((item) => item.id === id);
+    const updatedPost = isFeed
+      ? useFeedStore.getState().feed.find((item) => item.id === id)
+      : usePostStore.getState().post;
 
     if (!updatedPost) return;
 
@@ -85,13 +92,16 @@ export const PostActionRows: FC<PostActionRowstProps> = ({
 
     // 상태 업데이트
     setLikeState(updatedLikeState);
-    updateLikeState(id, updatedLikeState, updatedLikeCount);
+    isFeed
+      ? updateLikeState(id, updatedLikeState, updatedLikeCount)
+      : updatePostLikeState(updatedLikeState, updatedLikeCount);
 
     const likeData = {
-      post_id: id,
+      post_id: Number(id),
       user_id: Number(session.user.id),
       up_down: updatedLikeState,
     };
+    console.log(likeData);
     try {
       await updateVote(likeData);
     } catch (error) {

@@ -27,14 +27,14 @@ interface PostStore {
   post: PostDetails | null;
   setPost: (post: PostDetails) => void;
   clearPost: () => void;
-  updateLikeState: (isLiked: boolean | string, likeCount: number) => void;
+  updatePostLikeState: (isLiked: boolean | string, likeCount: number) => void;
 }
 
 export const usePostStore = create<PostStore>((set) => ({
   post: null,
   setPost: (post) => set(() => ({ post })),
   clearPost: () => set(() => ({ post: null })),
-  updateLikeState: (isLiked, likeCount) =>
+  updatePostLikeState: (isLiked, likeCount) =>
     set((state) => ({
       post: state.post ? { ...state.post, isLiked, likeCount } : null,
     })),

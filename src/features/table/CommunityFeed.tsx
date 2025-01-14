@@ -49,6 +49,7 @@ export const Feed: FC<FeedProps> = ({ Feed }) => {
               id={item.id}
               className="w-full !mt-2"
               hideShareButton={true}
+              isFeed={true}
             />
           </div>
         </div>
