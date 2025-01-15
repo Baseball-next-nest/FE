@@ -15,6 +15,8 @@ import { useFeedStore } from "@/entities/FeedStore";
 import { usePostStore } from "@/entities/PostStore";
 import { useSessionStore } from "@/entities/SessionStore";
 import useLoadingStore from "@/entities/LoadingStore";
+import { CommentsInput } from "@/features/input/CommentsInput";
+import { Comments } from "@/features/content-box/Comments";
 
 interface PostDetailProps {
   params: { id: number };
@@ -25,6 +27,14 @@ export default function PostDetail({ params }: PostDetailProps) {
   const { session } = useSessionStore();
   const [showTooltip, setShowTooltip] = useState(false);
   const tooltipRef = useRef<HTMLSpanElement | null>(null);
+  const commentSectionRef = useRef<HTMLDivElement>(null);
+
+  const scrollToComments = () => {
+    commentSectionRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  };
 
   const handleShareClick = async () => {
     try {
@@ -37,9 +47,6 @@ export default function PostDetail({ params }: PostDetailProps) {
   };
   const postId = params.id;
   useEffect(() => {
-    // const { isLoading, setLoading } = useLoadingStore.getState();
-    // setLoading(false);
-    // console.log(isLoading);
     const fetchPost = async () => {
       try {
         if (!session || !session.user) return;
@@ -126,6 +133,7 @@ export default function PostDetail({ params }: PostDetailProps) {
         id={params.id}
         isFeed={false}
         onShareClick={handleShareClick}
+        onScroll={scrollToComments}
       />
       <div className="relative w-full">
         {showTooltip && (
@@ -139,38 +147,7 @@ export default function PostDetail({ params }: PostDetailProps) {
         )}
       </div>
       {/* 댓글 */}
-      <div className="relative w-full flex items-center justify-center mt-8">
-        <SearchInput
-          className="w-full py-3 focus:border-gray-700"
-          placeholder="댓글을 추가해보세요"
-        />
-      </div>
-
-      <div className="comment-meta mt-6 ml-1.5 py-[2px] min-w-0 w-4/5">
-        <div className="flex items-center pr-1 overflow-hidden">
-          <div className="flex flex-col overflow-hidden">
-            <div className="flex items-center mb-2 relative overflow-hidden whitespace-nowrap w-auto">
-              <span className="flex items-center text-neutral-content-weak text-12 overflow-hidden">
-                <span className="text-zinc-950">닉네임</span>
-                <span className="mx-1">·</span>
-                <span>시간</span>
-                <span className="mx-1">·</span>
-              </span>
-            </div>
-          </div>
-        </div>
-        <div className="text-14 rounded-[8px] pb-0.5 overflow-hidden">
-          <div className="py-0 mx-0.5 inline-block max-w-full">
-            <p>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit.
-              Voluptatibus quasi suscipit quisquam at error cumque voluptatem
-              numquam inventore veritatis tenetur? Dolorem explicabo rerum,
-              exercitationem in ut quo nesciunt vitae molestiae!
-            </p>
-          </div>
-        </div>
-        <CommentsActionRows className="!mt-0.5" />
-      </div>
+      <Comments ScrollRef={commentSectionRef} />
     </CommunityBox>
   );
 }

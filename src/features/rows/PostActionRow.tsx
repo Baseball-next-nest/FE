@@ -14,6 +14,7 @@ interface PostActionRowstProps {
   hideShareButton?: boolean;
   isFeed?: boolean;
   onShareClick?: () => void;
+  onScroll?: () => void;
 }
 
 // like 배열은 id돌려서 같은거면 + - 불가능,
@@ -24,6 +25,7 @@ export const PostActionRows: FC<PostActionRowstProps> = ({
   hideShareButton,
   isFeed,
   onShareClick,
+  onScroll,
 }) => {
   const [likeState, setLikeState] = useState("");
   const { session } = useSessionStore();
@@ -122,7 +124,7 @@ export const PostActionRows: FC<PostActionRowstProps> = ({
       <span className="relative">
         <span
           className={clsx(
-            "h-8 px-4 p-0 text-12 inline-flex items-center button-shell overflow-visible font-semibold flex items-center cursor-auto rounded-[16px]",
+            "h-8 p-0 text-12 inline-flex items-center button-shell overflow-visible font-semibold flex items-center cursor-auto rounded-[16px]",
             {
               "up-vote": likeState === "up",
               "down-vote": likeState === "down",
@@ -132,9 +134,9 @@ export const PostActionRows: FC<PostActionRowstProps> = ({
         >
           <button
             onClick={() => updatePostVoteState("up")}
-            className="rounded-[16px] hover:bg-gray-300"
+            className="rounded-[16px] hover:bg-gray-300 aspect-square"
           >
-            <span className="flex my-1.5 mx-1.5 text-16">
+            <span className="flex my-1.5 mx-2 text-16">
               <FaArrowUp
                 className={clsx("arrow-up", {
                   "arrow-selected": likeState === "up",
@@ -142,12 +144,14 @@ export const PostActionRows: FC<PostActionRowstProps> = ({
               />
             </span>
           </button>
-          <span className="">{post?.likeCount}</span>
+          <span className={likeState !== "none" ? "text-white" : ""}>
+            {post?.likeCount}
+          </span>
           <button
             onClick={() => updatePostVoteState("down")}
-            className="rounded-[16px] hover:bg-gray-300"
+            className="rounded-[16px] hover:bg-gray-300 aspect-square"
           >
-            <span className="flex my-1.5 mx-1.5 text-16">
+            <span className="flex my-1.5 mx-2 text-16">
               <FaArrowDown
                 className={clsx("arrow-down", {
                   "arrow-selected": likeState === "down",
@@ -157,8 +161,7 @@ export const PostActionRows: FC<PostActionRowstProps> = ({
           </button>
         </span>
       </span>
-
-      {id ? (
+      {isFeed ? (
         <span>
           <Link
             className="h-8 px-4 p-0 text-12 inline-flex items-center overflow-visible font-semibold flex items-center cursor-pointer rounded-[16px] hover:bg-gray-300"
@@ -172,8 +175,10 @@ export const PostActionRows: FC<PostActionRowstProps> = ({
           </Link>
         </span>
       ) : (
-        // 스크롤 댓글창으로 가게 수정요망
-        <span className="h-8 px-4 p-0 text-12 inline-flex items-center overflow-visible font-semibold flex items-center cursor-pointer rounded-[16px] hover:bg-gray-300">
+        <span
+          onClick={onScroll}
+          className="h-8 px-4 p-0 text-12 inline-flex items-center overflow-visible font-semibold flex items-center cursor-pointer rounded-[16px] hover:bg-gray-300"
+        >
           <span className="mr-1.5">
             <FaRegComment />
           </span>
