@@ -27,7 +27,7 @@ export const PostActionRows: FC<PostActionRowstProps> = ({
 }) => {
   const [likeState, setLikeState] = useState("");
   const { session } = useSessionStore();
-  const { setLoading } = useLoadingStore.getState();
+  const { isLoading, setLoading } = useLoadingStore.getState();
   const { feed, updateLikeState } = useFeedStore();
   const { updatePostLikeState } = usePostStore();
   const post = isFeed
@@ -43,6 +43,7 @@ export const PostActionRows: FC<PostActionRowstProps> = ({
     setLikeState(post.isLiked);
   }, [feed, setLoading]);
   const updatePostVoteState = async (newVoteState: "up" | "down" | "none") => {
+    setLoading(false);
     const updatedPost = isFeed
       ? useFeedStore.getState().feed.find((item) => item.id === id)
       : usePostStore.getState().post;

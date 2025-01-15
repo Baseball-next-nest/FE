@@ -14,6 +14,7 @@ import { useEffect, useRef, useState } from "react";
 import { useFeedStore } from "@/entities/FeedStore";
 import { usePostStore } from "@/entities/PostStore";
 import { useSessionStore } from "@/entities/SessionStore";
+import useLoadingStore from "@/entities/LoadingStore";
 
 interface PostDetailProps {
   params: { id: number };
@@ -22,7 +23,6 @@ interface PostDetailProps {
 export default function PostDetail({ params }: PostDetailProps) {
   const { post, setPost } = usePostStore();
   const { session } = useSessionStore();
-  // const [post, setPost] = useState<PostItem | null>(null);
   const [showTooltip, setShowTooltip] = useState(false);
   const tooltipRef = useRef<HTMLSpanElement | null>(null);
 
@@ -37,6 +37,9 @@ export default function PostDetail({ params }: PostDetailProps) {
   };
   const postId = params.id;
   useEffect(() => {
+    // const { isLoading, setLoading } = useLoadingStore.getState();
+    // setLoading(false);
+    // console.log(isLoading);
     const fetchPost = async () => {
       try {
         if (!session || !session.user) return;

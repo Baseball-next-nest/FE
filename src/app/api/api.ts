@@ -15,9 +15,9 @@ async function fetcher(
   const { isLoading, setLoading } = useLoadingStore.getState();
 
   const isJSON = customHeaders?.["Content-Type"] === "application/json";
-  // if (!disableLoading) {
-  // }
-  setLoading(true);
+  if (!disableLoading) {
+    setLoading(true);
+  }
 
   try {
     const res = await fetch(`${BASE_URL}${url}`, {
@@ -34,14 +34,16 @@ async function fetcher(
       const errorText = await res.text();
       throw new Error(`Failed to fetch data: ${errorText}`);
     }
-
+    if (!disableLoading) {
+      setLoading(false);
+    }
     return await res.json();
   } catch (error) {
     throw error;
   } finally {
-    setLoading(false);
-    // if (!disableLoading) {
-    // }
+    if (!disableLoading) {
+      setLoading(false);
+    }
   }
 }
 
