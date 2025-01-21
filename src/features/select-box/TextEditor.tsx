@@ -3,6 +3,7 @@
 // import dynamic from "next/dynamic";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
+import clsx from "clsx";
 import { useCallback, useRef } from "react";
 import { uploadFiles } from "@/app/api/api";
 
@@ -10,10 +11,17 @@ import { uploadFiles } from "@/app/api/api";
 
 interface TextEditorProps {
   value: string;
+  placeholder?: string;
+  className?: string;
   onChange: (value: string) => void;
 }
 
-export default function TextEditor({ value, onChange }: TextEditorProps) {
+export default function TextEditor({
+  value,
+  onChange,
+  placeholder,
+  className,
+}: TextEditorProps) {
   // ReactQuill ref
   const quillRef = useRef<any>(null);
 
@@ -83,8 +91,8 @@ export default function TextEditor({ value, onChange }: TextEditorProps) {
       onChange={onChange}
       modules={modules}
       formats={formats}
-      placeholder="본문을 입력하세요..."
-      className="custom-editor bg-white"
+      placeholder={placeholder}
+      className={clsx("custom-editor bg-white", className)}
     />
   );
 }

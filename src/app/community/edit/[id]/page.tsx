@@ -107,7 +107,11 @@ export default function EditPage({ params }: EditDetailProps) {
             )}
           </div>
           <div className="mb-4">
-            <TextEditor value={content} onChange={setContent} />
+            <TextEditor
+              value={content}
+              onChange={setContent}
+              placeholder="본문을 입력해주세요."
+            />
           </div>
           <div className="self-end">
             <button

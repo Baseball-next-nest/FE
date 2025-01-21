@@ -1,57 +1,74 @@
 "use client";
 import { FC, useState } from "react";
+import clsx from "clsx";
 import { CommentsActionRows } from "../rows/CommentsActionRows";
 import { CommentsInput } from "../input/CommentsInput";
-
+import dynamic from "next/dynamic";
+import { useEditorStore } from "@/entities/EditorStore";
+const TextEditor = dynamic(() => import("@/features/select-box/TextEditor"), {
+  ssr: false,
+});
 interface CommentsProps {
   ScrollRef: any;
+  user: any;
 }
 
-export const Comments: FC<CommentsProps> = ({ ScrollRef }) => {
+export const Comments: FC<CommentsProps> = ({ ScrollRef, user }) => {
+  const { content, setContent } = useEditorStore();
+  const isEmptyContent = (text: string) => {
+    const cleanedContent = text.replace(/<p><br><\/p>/g, "").trim();
+    return cleanedContent === "";
+  };
   const [isCommentClicked, setIsCommentClick] = useState(false);
   const onCommentClick = () => {
     setIsCommentClick(true);
   };
+
+  const onReplySubmit = () => {};
   const onCancelClick = () => {
+    if (!isEmptyContent(content)) {
+      if (window.confirm("그만둘 경우 작성 중인 내용이 모두 사라져요.")) {
+        setContent("");
+        setIsCommentClick(false);
+      } else {
+        return;
+      }
+    }
     setIsCommentClick(false);
-    console.log(isCommentClicked);
   };
   return (
     <>
       <div className="relative w-full flex flex-col items-center justify-center mt-8">
-        {/* 에디터 */}
-        {isCommentClicked && (
-          <div className="w-full mb-4">
-            <div className="p-4 border rounded-lg bg-gray-100">여긴 에디터</div>
-          </div>
-        )}
-
         {/* 댓글 입력창 */}
-        <CommentsInput
-          className="w-full py-3 focus:border-gray-700"
-          onClick={onCommentClick}
-          placeholder="댓글을 추가해보세요"
-        />
-        {/* <CommentsInput
-          className="w-full max-w-md py-3 px-4 focus:border-gray-700 border rounded-lg"
-          placeholder="댓글을 추가해보세요"
-          onClick={onCommentClick}
-        /> */}
-
+        {isCommentClicked ? (
+          <TextEditor value={content} onChange={setContent} />
+        ) : (
+          <CommentsInput
+            className="w-full py-3 focus:border-gray-700"
+            onClick={onCommentClick}
+            placeholder={`${user}님, 의견을 공유해보세요!`}
+          />
+        )}
         {/* 버튼 섹션 */}
         {isCommentClicked && (
-          <div className="flex gap-2 mt-4">
+          <div className="w-11/12 flex items-center justify-end gap-2 mt-4">
             <button
-              className="px-4 py-2 bg-blue-500 text-white rounded"
-              onClick={() => alert("댓글 작성 완료")}
-            >
-              작성
-            </button>
-            <button
-              className="px-4 py-2 bg-gray-300 text-gray-700 rounded"
-              onClick={onCancelClick} // 취소 버튼 클릭
+              className="px-3.5 py-1.5 text-xs text-gray-700 rounded hover:bg-gray-200"
+              onClick={onCancelClick}
             >
               취소
+            </button>
+            <button
+              className={clsx(
+                "px-3.5 py-1.5 text-xs rounded text-gray-700 bg-gray-200",
+                {
+                  "bg-blue-200": !isEmptyContent(content),
+                }
+              )}
+              disabled={isEmptyContent(content)}
+              onClick={onReplySubmit}
+            >
+              등록
             </button>
           </div>
         )}

@@ -147,7 +147,7 @@ export default function PostDetail({ params }: PostDetailProps) {
         )}
       </div>
       {/* 댓글 */}
-      <Comments ScrollRef={commentSectionRef} />
+      <Comments user={session.user.nickname} ScrollRef={commentSectionRef} />
     </CommunityBox>
   );
 }
