@@ -23,7 +23,6 @@ export default function post() {
   const { content, setContent } = useEditorStore();
   const { selectedTeam, selectTeam } = useTeamStore();
   const { setLoading } = useLoadingStore();
-  // console.log(content);
   const router = useRouter();
 
   useEffect(() => {
@@ -48,7 +47,6 @@ export default function post() {
       return;
     }
     const user = session.user.id;
-    console.log(user);
     const postData = {
       category: selectedTeam.team,
       title: data.title,

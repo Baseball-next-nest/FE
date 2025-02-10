@@ -115,3 +115,43 @@ export async function updateVote(like: any) {
     disableLoading: true,
   });
 }
+export async function createComments(data: any) {
+  return fetcher(`/community/createComment`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+    disableLoading: false,
+  });
+}
+export async function editComments(data: any) {
+  return fetcher(`/community/modifyComment`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+    disableLoading: false,
+  });
+}
+export async function deleteComments(id: number) {
+  return fetcher(`/community/deleteComment`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ commentId: id }),
+    disableLoading: false,
+  });
+}
+export async function updateCommentVote(like: any) {
+  return fetcher(`/community/updownComment`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(like),
+    disableLoading: true,
+  });
+}

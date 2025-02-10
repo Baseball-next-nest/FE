@@ -3,19 +3,15 @@ import { CommunityBox } from "@/features/content-box/CommunityBox";
 import { BackButton } from "@/features/button/BackButton";
 
 import Image from "next/image";
-import { SearchInput } from "@/features/input/SearchInput";
 import { PostActionRows } from "@/features/rows/PostActionRow";
-import { CommentsActionRows } from "@/features/rows/CommentsActionRows";
 import { fetchBoardPostById } from "@/app/api/api";
 import { getTeamNameInKorean } from "@/features/func/team";
 import { getRelativeTime } from "@/features/func/date";
 import DropdownMenu from "@/features/button/DropdownMenu";
 import { useEffect, useRef, useState } from "react";
-import { useFeedStore } from "@/entities/FeedStore";
 import { usePostStore } from "@/entities/PostStore";
 import { useSessionStore } from "@/entities/SessionStore";
-import useLoadingStore from "@/entities/LoadingStore";
-import { CommentsInput } from "@/features/input/CommentsInput";
+
 import { Comments } from "@/features/content-box/Comments";
 
 interface PostDetailProps {
@@ -24,6 +20,7 @@ interface PostDetailProps {
 }
 export default function PostDetail({ params }: PostDetailProps) {
   const { post, setPost } = usePostStore();
+
   const { session } = useSessionStore();
   const [showTooltip, setShowTooltip] = useState(false);
   const tooltipRef = useRef<HTMLSpanElement | null>(null);
@@ -77,6 +74,8 @@ export default function PostDetail({ params }: PostDetailProps) {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [session, params.id]);
+  // console.log(post?.comment);
+  // console.log(post);
   if (!post) {
     return <div>게시글을 찾을 수 없습니다.</div>;
   }
@@ -147,7 +146,13 @@ export default function PostDetail({ params }: PostDetailProps) {
         )}
       </div>
       {/* 댓글 */}
-      <Comments user={session.user.nickname} ScrollRef={commentSectionRef} />
+      <Comments
+        initialComments={post.comment}
+        postId={params.id}
+        session={session}
+        user={session.user.nickname}
+        ScrollRef={commentSectionRef}
+      />
     </CommunityBox>
   );
 }

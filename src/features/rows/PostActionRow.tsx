@@ -171,7 +171,7 @@ export const PostActionRows: FC<PostActionRowstProps> = ({
               <FaRegComment />
             </span>
             {/* comment quantity api나오면 수정요망 */}
-            <span>{id}</span>
+            <span>{post.commentCount}</span>
           </Link>
         </span>
       ) : (
@@ -182,7 +182,7 @@ export const PostActionRows: FC<PostActionRowstProps> = ({
           <span className="mr-1.5">
             <FaRegComment />
           </span>
-          <span>11</span>
+          <span>{post.commentCount}</span>
         </span>
       )}
 
