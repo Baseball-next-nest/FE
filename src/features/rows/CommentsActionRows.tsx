@@ -28,10 +28,11 @@ export const CommentsActionRows: FC<CommentsActionRowstProps> = ({
   const { setLoading } = useLoadingStore();
   const { post, setPost, updateCommentLikeState } = usePostStore();
   const [likeState, setLikeState] = useState("");
+  const comment = post?.comment?.find((cmt) => cmt.id == commentId);
   useEffect(() => {
-    setLikeState(comment.isLiked);
+    setLikeState(comment?.isLiked);
   }, []);
-  const comment = post.comment.find((cmt) => cmt.id == commentId);
+
   const handleEdit = () => {
     onEdit();
   };
@@ -53,7 +54,7 @@ export const CommentsActionRows: FC<CommentsActionRowstProps> = ({
     }
   };
   const updatePostVoteState = async (newVoteState: "up" | "down" | "none") => {
-    const comment = post.comment.find((cmt) => cmt.id == commentId);
+    const comment = post?.comment?.find((cmt) => cmt.id == commentId);
     const { likeCount, isLiked } = comment;
     let updatedLikeState: "up" | "down" | "none" = isLiked;
     let updatedLikeCount = likeCount;
@@ -85,7 +86,6 @@ export const CommentsActionRows: FC<CommentsActionRowstProps> = ({
     };
     const { updatedState, updatedCount } = calculateLikeState();
 
-    // 업데이트된 상태와 카운트를 적용
     updatedLikeState = updatedState;
     updatedLikeCount = updatedCount;
 

@@ -8,7 +8,7 @@ interface EditCommentsProps {
   commentId: number;
   initialContent: string;
   editState: (state: boolean) => void;
-  onEditSuccess: (updatedComment: { id: number; content: string }) => void; // 콜백 추가
+  onEditSuccess: (updatedComment: { id: number; content: string }) => void;
 }
 
 export const EditComments: FC<EditCommentsProps> = ({
