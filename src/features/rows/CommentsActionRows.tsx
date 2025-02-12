@@ -7,7 +7,7 @@ import { FaRegComment, FaArrowUp, FaArrowDown } from "react-icons/fa";
 import { MdOutlineCreate, MdDeleteOutline } from "react-icons/md";
 import LoadingSpinner from "../loading/Loading";
 import { CommentsInput } from "../input/CommentsInput";
-import { usePostStore } from "@/entities/PostStore";
+import { removeCommentWithChildren, usePostStore } from "@/entities/PostStore";
 interface CommentsActionRowstProps {
   className?: string;
   commentId: any;
@@ -41,9 +41,13 @@ export const CommentsActionRows: FC<CommentsActionRowstProps> = ({
       try {
         setLoading(true);
         await deleteComments(commentId);
-        setPost({
-          ...post!,
-          comment: post!.comment.filter((cmt) => cmt.id !== commentId),
+        setPost((prevPost) => {
+          if (!prevPost) return prevPost;
+          const updatedComments = removeCommentWithChildren(
+            prevPost.comment,
+            commentId
+          );
+          return { ...prevPost, comment: updatedComments };
         });
       } catch (err) {
         alert("댓글 삭제 실패.");
@@ -53,56 +57,86 @@ export const CommentsActionRows: FC<CommentsActionRowstProps> = ({
       }
     }
   };
-  const updatePostVoteState = async (newVoteState: "up" | "down" | "none") => {
-    const comment = post?.comment?.find((cmt) => cmt.id == commentId);
-    const { likeCount, isLiked } = comment;
-    let updatedLikeState: "up" | "down" | "none" = isLiked;
-    let updatedLikeCount = likeCount;
-    const calculateLikeState = () => {
-      if (isLiked === null || isLiked === "none") {
-        // 초기
-        return {
-          updatedState: newVoteState,
-          updatedCount:
-            newVoteState === "up"
-              ? Math.min(updatedLikeCount + 1, likeCount + 1)
-              : Math.max(updatedLikeCount - 1, likeCount - 1),
-        };
-      } else if (isLiked === newVoteState) {
-        // 동일
-        return {
-          updatedState: "none",
-          updatedCount:
-            newVoteState === "up" ? updatedLikeCount - 1 : updatedLikeCount + 1,
-        };
-      } else {
-        // 반대
-        return {
-          updatedState: newVoteState,
-          updatedCount:
-            newVoteState === "up" ? updatedLikeCount + 2 : updatedLikeCount - 2,
-        };
-      }
-    };
-    const { updatedState, updatedCount } = calculateLikeState();
+  // const updatePostVoteState = async (newVoteState: "up" | "down" | "none") => {
+  //   const comment = post?.comment?.find((cmt) => cmt.id == commentId);
+  //   const { likeCount, isLiked } = comment;
+  //   let updatedLikeState: "up" | "down" | "none" = isLiked;
+  //   let updatedLikeCount = likeCount;
+  //   const calculateLikeState = () => {
+  //     if (isLiked === null || isLiked === "none") {
+  //       // 초기
+  //       return {
+  //         updatedState: newVoteState,
+  //         updatedCount:
+  //           newVoteState === "up"
+  //             ? Math.min(updatedLikeCount + 1, likeCount + 1)
+  //             : Math.max(updatedLikeCount - 1, likeCount - 1),
+  //       };
+  //     } else if (isLiked === newVoteState) {
+  //       // 동일
+  //       return {
+  //         updatedState: "none",
+  //         updatedCount:
+  //           newVoteState === "up" ? updatedLikeCount - 1 : updatedLikeCount + 1,
+  //       };
+  //     } else {
+  //       // 반대
+  //       return {
+  //         updatedState: newVoteState,
+  //         updatedCount:
+  //           newVoteState === "up" ? updatedLikeCount + 2 : updatedLikeCount - 2,
+  //       };
+  //     }
+  //   };
+  //   const { updatedState, updatedCount } = calculateLikeState();
 
-    updatedLikeState = updatedState;
-    updatedLikeCount = updatedCount;
+  //   updatedLikeState = updatedState;
+  //   updatedLikeCount = updatedCount;
+
+  //   setLikeState(updatedLikeState);
+  //   updateCommentLikeState(comment.id, updatedLikeState, updatedLikeCount);
+
+  //   const likeData = {
+  //     comment_id: Number(comment.id),
+  //     user_id: Number(currentUserId),
+  //     up_down: updatedLikeState,
+  //   };
+  //   console.log(likeData);
+  //   try {
+  //     await updateCommentVote(likeData);
+  //   } catch (error) {
+  //     console.error("Error updating vote state:", error);
+  //     // updateLikeState(id, isLiked, likeCount);
+  //   }
+  // };
+  const updatePostVoteState = async (newVoteState: "up" | "down" | "none") => {
+    const comment = post?.comment?.find((cmt) => cmt.id === commentId); // 수정: 대댓글 탐색도 필요
+    if (!comment) return;
+
+    const { likeCount, isLiked } = comment;
+    let updatedLikeState = newVoteState;
+    let updatedLikeCount = likeCount;
+
+    if (isLiked === newVoteState) {
+      updatedLikeState = "none";
+      updatedLikeCount = newVoteState === "up" ? likeCount - 1 : likeCount + 1;
+    } else if (isLiked === "none" || isLiked === null) {
+      updatedLikeCount = newVoteState === "up" ? likeCount + 1 : likeCount - 1;
+    } else {
+      updatedLikeCount = newVoteState === "up" ? likeCount + 2 : likeCount - 2;
+    }
 
     setLikeState(updatedLikeState);
-    updateCommentLikeState(comment.id, updatedLikeState, updatedLikeCount);
+    updateCommentLikeState(commentId, updatedLikeState, updatedLikeCount);
 
-    const likeData = {
-      comment_id: Number(comment.id),
-      user_id: Number(currentUserId),
-      up_down: updatedLikeState,
-    };
-    console.log(likeData);
     try {
-      await updateCommentVote(likeData);
+      await updateCommentVote({
+        comment_id: Number(comment.id),
+        user_id: Number(currentUserId),
+        up_down: updatedLikeState,
+      });
     } catch (error) {
       console.error("Error updating vote state:", error);
-      // updateLikeState(id, isLiked, likeCount);
     }
   };
 
@@ -136,7 +170,7 @@ export const CommentsActionRows: FC<CommentsActionRowstProps> = ({
               />
             </span>
           </button>
-          <span>{comment?.likeCount}</span>
+          <span>{!comment?.likeCount ? "0" : comment?.likeCount}</span>
           <button
             onClick={() => updatePostVoteState("down")}
             className="rounded-[16px] hover:bg-gray-300 aspect-square"

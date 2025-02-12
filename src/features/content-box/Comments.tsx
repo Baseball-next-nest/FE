@@ -26,7 +26,7 @@ export const Comments: FC<CommentsProps> = ({
   user,
 }) => {
   const { content, setContent } = useEditorStore();
-  const { post, setPost } = usePostStore();
+  const { post, setPost, updateNestedComment } = usePostStore();
   const [isCommentClicked, setIsCommentClick] = useState(false);
   const [editState, setEditState] = useState<{ [key: number]: boolean }>({});
   const [replyState, setReplyState] = useState<{ [key: number]: boolean }>({});
@@ -48,17 +48,7 @@ export const Comments: FC<CommentsProps> = ({
   };
 
   const onEditSuccess = (updatedComment: { id: number; content: string }) => {
-    setPost((prevPost) => {
-      if (!prevPost) return null;
-      return {
-        ...prevPost,
-        comment: prevPost.comment.map((comment) =>
-          comment.id === updatedComment.id
-            ? { ...comment, content: updatedComment.content }
-            : comment
-        ),
-      };
-    });
+    updateNestedComment(updatedComment);
   };
 
   const onSubmit = async () => {
@@ -129,6 +119,7 @@ export const Comments: FC<CommentsProps> = ({
             onReplyClick={onReplyClick}
             onEditClick={onEditClick}
             editState={editState}
+            setReplyState={setReplyState}
             replyState={replyState}
             onEditSuccess={onEditSuccess}
             replyRefs={replyRefs}

@@ -33,20 +33,19 @@ export const EditComments: FC<EditCommentsProps> = ({
 
     try {
       await editComments(updatedComment);
-      onEditSuccess({ id: commentId, content }); // 수정 성공 시 상위로 수정된 데이터 전달
+      onEditSuccess({ id: commentId, content });
       editState(false);
     } catch (err) {
-      alert("댓글 수정 실패.");
+      // alert("댓글 수정 실패.");
       console.error("Error updating comment:", err);
     }
   };
 
-  const onCancelClick = () => {
+  const onCancelClick = (commentId: number) => {
     if (window.confirm("그만둘 경우 수정 중인 내용이 모두 사라져요.")) {
-      editState(false);
+      editState((prev) => ({ ...prev, [commentId]: false }));
     }
   };
-
   return (
     <form className="w-full" onSubmit={onSubmit}>
       <TextEditor

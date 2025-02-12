@@ -52,6 +52,91 @@ interface PostStore {
   ) => void;
 }
 
+// 대댓글 추가
+const addCommentTree = (
+  comments: Comment[],
+  newComment: Comment
+): Comment[] => {
+  return comments.map((comment) => {
+    if (comment.id === newComment.parent_id) {
+      return {
+        ...comment,
+        children: [...(comment.children || []), newComment],
+      };
+    }
+
+    if (comment.children && comment.children.length > 0) {
+      return {
+        ...comment,
+        children: updateCommentTree(comment.children, newComment),
+      };
+    }
+
+    return comment;
+  });
+};
+//대댓글 수정
+const updateCommentTree = (
+  comments: Comment[],
+  updatedComment: { id: number; content: string }
+): Comment[] => {
+  return comments.map((comment) => {
+    if (comment.id === updatedComment.id) {
+      return { ...comment, content: updatedComment.content };
+    }
+
+    if (comment.children && comment.children.length > 0) {
+      return {
+        ...comment,
+        children: updateCommentTree(comment.children, updatedComment),
+      };
+    }
+
+    return comment;
+  });
+};
+//대댓글 삭제
+export const removeCommentWithChildren = (
+  comments: Comment[],
+  commentId: number
+): Comment[] => {
+  return comments
+    .filter((comment) => comment.id !== commentId) // 삭제할 댓글 제외
+    .map((comment) => ({
+      ...comment,
+      children: comment.children
+        ? removeCommentWithChildren(comment.children, commentId)
+        : [],
+    }));
+};
+//대댓글 좋아요
+const updateNestedCommentLikeState = (
+  comments: Comment[],
+  commentId: number,
+  isLiked: boolean | string,
+  likeCount: number
+): Comment[] => {
+  return comments.map((comment) => {
+    if (comment.id === commentId) {
+      return { ...comment, isLiked, likeCount };
+    }
+
+    if (comment.children && comment.children.length > 0) {
+      return {
+        ...comment,
+        children: updateNestedCommentLikeState(
+          comment.children,
+          commentId,
+          isLiked,
+          likeCount
+        ),
+      };
+    }
+
+    return comment;
+  });
+};
+
 export const usePostStore = create<PostStore>((set) => ({
   post: null,
   setPost: (post) =>
@@ -59,18 +144,46 @@ export const usePostStore = create<PostStore>((set) => ({
       post: typeof post === "function" ? post(state.post) : post,
     })),
   clearPost: () => set(() => ({ post: null })),
+  //게시물 좋아요
   updatePostLikeState: (isLiked, likeCount) =>
     set((state) => ({
       post: state.post ? { ...state.post, isLiked, likeCount } : null,
     })),
+  //댓글 좋아요
   updateCommentLikeState: (commentId, isLiked, likeCount) =>
     set((state) => {
       if (!state.post) return state;
 
-      const updatedComments = state.post.comment.map((comment) =>
-        comment.id === commentId ? { ...comment, isLiked, likeCount } : comment
+      const updatedComments = updateNestedCommentLikeState(
+        state.post.comment,
+        commentId,
+        isLiked,
+        likeCount
       );
 
+      return {
+        post: { ...state.post, comment: updatedComments },
+      };
+    }),
+
+  //대댓글 추가
+  addNestedComment: (newComment: Comment) =>
+    set((state) => {
+      if (!state.post) return state;
+      const updatedComments = addCommentTree(state.post.comment, newComment);
+      return {
+        post: { ...state.post, comment: updatedComments },
+      };
+    }),
+
+  //대댓글 수정
+  updateNestedComment: (updatedComment: { id: number; content: string }) =>
+    set((state) => {
+      if (!state.post) return state;
+      const updatedComments = updateCommentTree(
+        state.post.comment,
+        updatedComment
+      );
       return {
         post: { ...state.post, comment: updatedComments },
       };
