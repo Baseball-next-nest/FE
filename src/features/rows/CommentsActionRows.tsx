@@ -8,6 +8,7 @@ import { MdOutlineCreate, MdDeleteOutline } from "react-icons/md";
 import LoadingSpinner from "../loading/Loading";
 import { CommentsInput } from "../input/CommentsInput";
 import { removeCommentWithChildren, usePostStore } from "@/entities/PostStore";
+
 interface CommentsActionRowstProps {
   className?: string;
   commentId: any;
@@ -28,14 +29,37 @@ export const CommentsActionRows: FC<CommentsActionRowstProps> = ({
   const { setLoading } = useLoadingStore();
   const { post, setPost, updateCommentLikeState } = usePostStore();
   const [likeState, setLikeState] = useState("");
-  const comment = post?.comment?.find((cmt) => cmt.id == commentId);
+  const [likeCount, setLikeCount] = useState(0);
+
   useEffect(() => {
-    setLikeState(comment?.isLiked);
-  }, []);
+    const findCommentRecursively = (
+      comments: Comment[],
+      targetCommentId: number
+    ): Comment | null => {
+      for (const comment of comments) {
+        if (comment.id === targetCommentId) return comment;
+        if (comment.children?.length) {
+          const found = findCommentRecursively(
+            comment.children,
+            targetCommentId
+          );
+          if (found) return found;
+        }
+      }
+      return null;
+    };
+
+    const comment = findCommentRecursively(post?.comment || [], commentId);
+    if (comment) {
+      setLikeState(comment.isLiked || "none");
+      setLikeCount(comment.likeCount || 0);
+    }
+  }, [post, commentId]);
 
   const handleEdit = () => {
-    onEdit();
+    onEdit?.();
   };
+
   const handleDelete = async () => {
     if (window.confirm("해당 댓글을 삭제하시겠습니까?")) {
       try {
@@ -57,81 +81,63 @@ export const CommentsActionRows: FC<CommentsActionRowstProps> = ({
       }
     }
   };
-  // const updatePostVoteState = async (newVoteState: "up" | "down" | "none") => {
-  //   const comment = post?.comment?.find((cmt) => cmt.id == commentId);
-  //   const { likeCount, isLiked } = comment;
-  //   let updatedLikeState: "up" | "down" | "none" = isLiked;
-  //   let updatedLikeCount = likeCount;
-  //   const calculateLikeState = () => {
-  //     if (isLiked === null || isLiked === "none") {
-  //       // 초기
-  //       return {
-  //         updatedState: newVoteState,
-  //         updatedCount:
-  //           newVoteState === "up"
-  //             ? Math.min(updatedLikeCount + 1, likeCount + 1)
-  //             : Math.max(updatedLikeCount - 1, likeCount - 1),
-  //       };
-  //     } else if (isLiked === newVoteState) {
-  //       // 동일
-  //       return {
-  //         updatedState: "none",
-  //         updatedCount:
-  //           newVoteState === "up" ? updatedLikeCount - 1 : updatedLikeCount + 1,
-  //       };
-  //     } else {
-  //       // 반대
-  //       return {
-  //         updatedState: newVoteState,
-  //         updatedCount:
-  //           newVoteState === "up" ? updatedLikeCount + 2 : updatedLikeCount - 2,
-  //       };
-  //     }
-  //   };
-  //   const { updatedState, updatedCount } = calculateLikeState();
 
-  //   updatedLikeState = updatedState;
-  //   updatedLikeCount = updatedCount;
-
-  //   setLikeState(updatedLikeState);
-  //   updateCommentLikeState(comment.id, updatedLikeState, updatedLikeCount);
-
-  //   const likeData = {
-  //     comment_id: Number(comment.id),
-  //     user_id: Number(currentUserId),
-  //     up_down: updatedLikeState,
-  //   };
-  //   console.log(likeData);
-  //   try {
-  //     await updateCommentVote(likeData);
-  //   } catch (error) {
-  //     console.error("Error updating vote state:", error);
-  //     // updateLikeState(id, isLiked, likeCount);
-  //   }
-  // };
   const updatePostVoteState = async (newVoteState: "up" | "down" | "none") => {
-    const comment = post?.comment?.find((cmt) => cmt.id === commentId); // 수정: 대댓글 탐색도 필요
-    if (!comment) return;
-
-    const { likeCount, isLiked } = comment;
     let updatedLikeState = newVoteState;
     let updatedLikeCount = likeCount;
 
-    if (isLiked === newVoteState) {
+    if (likeState === newVoteState) {
       updatedLikeState = "none";
       updatedLikeCount = newVoteState === "up" ? likeCount - 1 : likeCount + 1;
-    } else if (isLiked === "none" || isLiked === null) {
+    } else if (likeState === "none" || likeState === null) {
       updatedLikeCount = newVoteState === "up" ? likeCount + 1 : likeCount - 1;
     } else {
       updatedLikeCount = newVoteState === "up" ? likeCount + 2 : likeCount - 2;
     }
 
     setLikeState(updatedLikeState);
-    updateCommentLikeState(commentId, updatedLikeState, updatedLikeCount);
+    setLikeCount(updatedLikeCount);
+
+    setPost((prevPost) => {
+      if (!prevPost) return prevPost;
+
+      const updateNestedCommentLikeState = (
+        comments: Comment[],
+        commentId: number,
+        isLiked: string,
+        likeCount: number
+      ): Comment[] => {
+        return comments.map((comment) => {
+          if (comment.id === commentId) {
+            return { ...comment, isLiked, likeCount };
+          }
+          if (comment.children && comment.children.length > 0) {
+            return {
+              ...comment,
+              children: updateNestedCommentLikeState(
+                comment.children,
+                commentId,
+                isLiked,
+                likeCount
+              ),
+            };
+          }
+          return comment;
+        });
+      };
+
+      const updatedComments = updateNestedCommentLikeState(
+        prevPost.comment,
+        commentId,
+        updatedLikeState,
+        updatedLikeCount
+      );
+      return { ...prevPost, comment: updatedComments };
+    });
 
     try {
       await updateCommentVote({
-        comment_id: Number(comment.id),
+        comment_id: Number(commentId),
         user_id: Number(currentUserId),
         up_down: updatedLikeState,
       });
@@ -170,7 +176,7 @@ export const CommentsActionRows: FC<CommentsActionRowstProps> = ({
               />
             </span>
           </button>
-          <span>{!comment?.likeCount ? "0" : comment?.likeCount}</span>
+          <span>{likeCount}</span>
           <button
             onClick={() => updatePostVoteState("down")}
             className="rounded-[16px] hover:bg-gray-300 aspect-square"

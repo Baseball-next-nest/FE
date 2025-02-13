@@ -48,7 +48,11 @@ export const RecursiveComment: FC<RecursiveCommentProps> = ({
 }) => {
   const { register, handleSubmit } = useForm();
   const [content, setContent] = useState<string>("");
-
+  const [renderKey, setRenderKey] = useState(0);
+  const onReplySuccess = () => {
+    setRenderKey((prev) => prev + 1);
+    setReplyState((prev) => ({ ...prev, [comment.id]: false }));
+  };
   const onSubmit = async () => {
     if (!content) return;
 
@@ -158,7 +162,7 @@ export const RecursiveComment: FC<RecursiveCommentProps> = ({
       {comment.children?.length > 0 &&
         comment.children.map((childComment: any) => (
           <RecursiveComment
-            key={childComment.id}
+            key={`${childComment.id}-${renderKey}`} // key 값에 renderKey 포함
             comment={childComment}
             depth={depth + 1}
             onReplyClick={onReplyClick}

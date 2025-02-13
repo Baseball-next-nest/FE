@@ -59,6 +59,7 @@ const addCommentTree = (
 ): Comment[] => {
   return comments.map((comment) => {
     if (comment.id === newComment.parent_id) {
+      // 부모 댓글을 찾았을 때 새 댓글 추가
       return {
         ...comment,
         children: [...(comment.children || []), newComment],
@@ -66,9 +67,10 @@ const addCommentTree = (
     }
 
     if (comment.children && comment.children.length > 0) {
+      // 자식 댓글이 있으면 재귀적으로 탐색
       return {
         ...comment,
-        children: updateCommentTree(comment.children, newComment),
+        children: addCommentTree(comment.children, newComment),
       };
     }
 
@@ -113,7 +115,7 @@ export const removeCommentWithChildren = (
 const updateNestedCommentLikeState = (
   comments: Comment[],
   commentId: number,
-  isLiked: boolean | string,
+  isLiked: string,
   likeCount: number
 ): Comment[] => {
   return comments.map((comment) => {
@@ -170,7 +172,11 @@ export const usePostStore = create<PostStore>((set) => ({
   addNestedComment: (newComment: Comment) =>
     set((state) => {
       if (!state.post) return state;
-      const updatedComments = addCommentTree(state.post.comment, newComment);
+
+      const updatedComments = addCommentTree(
+        [...state.post.comment],
+        newComment
+      ); // 깊은 복사
       return {
         post: { ...state.post, comment: updatedComments },
       };
