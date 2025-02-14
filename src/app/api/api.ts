@@ -155,3 +155,12 @@ export async function updateCommentVote(like: any) {
     disableLoading: true,
   });
 }
+export async function fetchSortedComments(
+  sort: any,
+  postId: number,
+  userId: number
+) {
+  return fetcher(
+    `/community/sortComment?method=${sort}&postId=${postId}&userId=${userId}`
+  );
+}

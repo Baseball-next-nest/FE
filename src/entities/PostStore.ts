@@ -59,7 +59,6 @@ const addCommentTree = (
 ): Comment[] => {
   return comments.map((comment) => {
     if (comment.id === newComment.parent_id) {
-      // 부모 댓글을 찾았을 때 새 댓글 추가
       return {
         ...comment,
         children: [...(comment.children || []), newComment],
@@ -67,7 +66,6 @@ const addCommentTree = (
     }
 
     if (comment.children && comment.children.length > 0) {
-      // 자식 댓글이 있으면 재귀적으로 탐색
       return {
         ...comment,
         children: addCommentTree(comment.children, newComment),

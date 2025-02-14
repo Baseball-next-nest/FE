@@ -7,6 +7,7 @@ import dynamic from "next/dynamic";
 import { CommentsInput } from "../input/CommentsInput";
 import { RecursiveComment } from "./RecursiveComments";
 import { createComments } from "@/app/api/api";
+import { SortBySelect } from "../select-box/SortBySelect";
 
 const TextEditor = dynamic(() => import("@/features/select-box/TextEditor"), {
   ssr: false,
@@ -71,7 +72,10 @@ export const Comments: FC<CommentsProps> = ({
       console.error("Error submitting comment:", err);
     }
   };
-
+  const handleSortChange = (sortedData: any[]) => {
+    setPost({ ...post, comment: [...sortedData] });
+    console.log(sortedData);
+  };
   return (
     <>
       <form className="w-full" onSubmit={handleSubmit(onSubmit)}>
@@ -105,6 +109,13 @@ export const Comments: FC<CommentsProps> = ({
               </button>
             </div>
           )}
+        </div>
+        <div className="flex">
+          <SortBySelect
+            userId={session.user.id}
+            postId={postId}
+            onSortChange={handleSortChange}
+          />
         </div>
       </form>
 

@@ -29,7 +29,7 @@ export default function TeamSelector() {
         dropdownRef.current &&
         !dropdownRef.current.contains(event.target as Node)
       ) {
-        if (isDropdownOpen) toggleDropdown(); // 드롭다운이 열려있을 때만 닫기
+        if (isDropdownOpen) toggleDropdown();
       }
     }
 
