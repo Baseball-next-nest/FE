@@ -87,8 +87,8 @@ export async function uploadFiles(file: any) {
   });
 }
 
-export async function fetchSectionPosts(id: number) {
-  return fetcher(`/community?userId=${id}`);
+export async function fetchSectionPosts(id: number, page: number) {
+  return fetcher(`/community?userId=${id}&page=${page}`);
 }
 
 export async function fetchBoardPostById(id: number, userId: number) {
