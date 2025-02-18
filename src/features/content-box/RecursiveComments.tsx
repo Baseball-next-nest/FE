@@ -120,7 +120,7 @@ export const RecursiveComment: FC<RecursiveCommentProps> = ({
           commentId={comment.id}
           onEdit={() => onEditClick(comment.id)}
           commentCreateUserId={comment.user_id}
-          currentUserId={session.user.id}
+          currentUserId={session?.user?.id}
           className="!mt-0.5"
         />
       )}

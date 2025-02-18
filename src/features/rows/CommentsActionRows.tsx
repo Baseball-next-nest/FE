@@ -8,6 +8,7 @@ import { MdOutlineCreate, MdDeleteOutline } from "react-icons/md";
 import LoadingSpinner from "../loading/Loading";
 import { CommentsInput } from "../input/CommentsInput";
 import { removeCommentWithChildren, usePostStore } from "@/entities/PostStore";
+import { useModalStore } from "@/entities/ModalStore";
 
 interface CommentsActionRowstProps {
   className?: string;
@@ -30,7 +31,7 @@ export const CommentsActionRows: FC<CommentsActionRowstProps> = ({
   const { post, setPost, updateCommentLikeState } = usePostStore();
   const [likeState, setLikeState] = useState("");
   const [likeCount, setLikeCount] = useState(0);
-
+  const { openLoginModal } = useModalStore();
   useEffect(() => {
     const findCommentRecursively = (
       comments: Comment[],
@@ -85,7 +86,10 @@ export const CommentsActionRows: FC<CommentsActionRowstProps> = ({
   const updatePostVoteState = async (newVoteState: "up" | "down" | "none") => {
     let updatedLikeState = newVoteState;
     let updatedLikeCount = likeCount;
-
+    if (!currentUserId) {
+      openLoginModal();
+      return;
+    }
     if (likeState === newVoteState) {
       updatedLikeState = "none";
       updatedLikeCount = newVoteState === "up" ? likeCount - 1 : likeCount + 1;

@@ -20,12 +20,12 @@ export default function Community() {
 
   // initial data
   useEffect(() => {
-    if (!session || !session.user) return;
-
     const fetchInitialFeed = async () => {
       setLoading(true);
       try {
-        const res = await fetchSectionPosts(session.user.id, 1);
+        const userId = session?.user?.id; // 세션이 없으면 undefined
+        const res = await fetchSectionPosts(userId, 1);
+        console.log(res);
         setFeed(res);
         setHasMore(res.length > 0); // 데이터가 없으면 로드 X
       } catch (error) {
@@ -39,11 +39,13 @@ export default function Community() {
 
   //추가 데이터 불러오기
   const loadMore = useCallback(async () => {
-    if (!session || !session.user || loading || !hasMore) return;
+    // if (!session || !session.user || loading || !hasMore) return;
+    if (loading || !hasMore) return;
 
     setLoading(true);
     try {
-      const res = await fetchSectionPosts(session.user.id, page + 1);
+      const userId = session?.user?.id;
+      const res = await fetchSectionPosts(userId, page + 1);
       setFeed([...feed, ...res]);
       setPage((prevPage) => prevPage + 1);
       setHasMore(res.length > 0);

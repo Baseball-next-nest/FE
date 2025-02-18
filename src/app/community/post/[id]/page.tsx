@@ -45,14 +45,12 @@ export default function PostDetail({ params }: PostDetailProps) {
   const postId = params.id;
   useEffect(() => {
     const fetchPost = async () => {
+      if (!session) return;
       try {
-        if (!session || !session.user) return;
-
         console.log(session);
-        const userId = session.user.id;
-        // const userId = session.user.id;
+        const userId = session?.user?.id;
         const postId = params.id;
-        const res = await fetchBoardPostById(Number(postId), Number(userId));
+        const res = await fetchBoardPostById(Number(postId), userId);
         setPost(res);
         // setPost(res);
       } catch (err) {
@@ -150,7 +148,7 @@ export default function PostDetail({ params }: PostDetailProps) {
         initialComments={post.comment}
         postId={params.id}
         session={session}
-        user={session.user.nickname}
+        user={session?.user?.nickname}
         ScrollRef={commentSectionRef}
       />
     </CommunityBox>

@@ -86,15 +86,19 @@ export async function uploadFiles(file: any) {
     body: file,
   });
 }
-
-export async function fetchSectionPosts(id: number, page: number) {
-  return fetcher(`/community?userId=${id}&page=${page}`);
+export async function fetchSectionPosts(id?: number, page: number = 1) {
+  const url = id
+    ? `/community?userId=${id}&page=${page}`
+    : `/community?page=${page}`;
+  return fetcher(url);
 }
 
-export async function fetchBoardPostById(id: number, userId: number) {
-  return fetcher(`/community/one?id=${id}&userId=${userId}`, {
-    next: { revalidate: 1 },
-  });
+export async function fetchBoardPostById(id: number, userId?: number) {
+  const url = id
+    ? `/community/one?id=${id}&userId=${userId}`
+    : `/community?id=${id}`;
+  console.log(url);
+  return fetcher(url);
 }
 export async function deleteCommunityPost(id: number) {
   return fetcher(`/community/delete`, {

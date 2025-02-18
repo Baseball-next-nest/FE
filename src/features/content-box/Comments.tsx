@@ -8,6 +8,7 @@ import { CommentsInput } from "../input/CommentsInput";
 import { RecursiveComment } from "./RecursiveComments";
 import { createComments } from "@/app/api/api";
 import { SortBySelect } from "../select-box/SortBySelect";
+import { useModalStore } from "@/entities/ModalStore";
 
 const TextEditor = dynamic(() => import("@/features/select-box/TextEditor"), {
   ssr: false,
@@ -17,7 +18,7 @@ interface CommentsProps {
   postId: number;
   session: any;
   ScrollRef: any;
-  user: any;
+  user?: any;
 }
 
 export const Comments: FC<CommentsProps> = ({
@@ -33,8 +34,15 @@ export const Comments: FC<CommentsProps> = ({
   const [replyState, setReplyState] = useState<{ [key: number]: boolean }>({});
   const replyRefs = useRef<{ [key: number]: HTMLDivElement | null }>({});
   const { register, reset, handleSubmit, formState } = useForm();
+  const { openLoginModal } = useModalStore();
+  const onCommentClick = () => {
+    if (!user) {
+      openLoginModal();
+      return;
+    }
 
-  const onCommentClick = () => setIsCommentClick(true);
+    setIsCommentClick(true);
+  };
 
   const onReplyClick = (commentId: number) => {
     setReplyState((prev) => ({ ...prev, [commentId]: !prev[commentId] }));
@@ -90,7 +98,11 @@ export const Comments: FC<CommentsProps> = ({
             <CommentsInput
               className="w-full py-3 focus:border-gray-700"
               onClick={onCommentClick}
-              placeholder={`${user}님, 의견을 공유해보세요!`}
+              placeholder={
+                user
+                  ? `${user}님, 의견을 공유해보세요!`
+                  : "의견을 공유해보세요!"
+              }
             />
           )}
           {isCommentClicked && (
@@ -112,7 +124,7 @@ export const Comments: FC<CommentsProps> = ({
         </div>
         <div className="flex">
           <SortBySelect
-            userId={session.user.id}
+            userId={session?.user?.id}
             postId={postId}
             onSortChange={handleSortChange}
           />

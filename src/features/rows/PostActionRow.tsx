@@ -2,6 +2,7 @@
 import { fetchSectionPosts, updateVote } from "@/app/api/api";
 import { useFeedStore } from "@/entities/FeedStore";
 import useLoadingStore from "@/entities/LoadingStore";
+import { useModalStore } from "@/entities/ModalStore";
 import { usePostStore } from "@/entities/PostStore";
 import { useSessionStore } from "@/entities/SessionStore";
 import clsx from "clsx";
@@ -36,22 +37,27 @@ export const PostActionRows: FC<PostActionRowstProps> = ({
     ? useFeedStore.getState().feed.find((item) => item.id === id)
     : usePostStore.getState().post;
   const initialLikeCountRef = useRef(post.likeCount);
+  const { openLoginModal } = useModalStore();
   console.log(post);
   if (!post) return null;
 
   useEffect(() => {
-    // const updatedPost = feed.find((item) => item.id === id);
     setLoading(false);
     setLikeState(post.isLiked);
+    console.log(likeState);
   }, [feed, setLoading]);
   const updatePostVoteState = async (newVoteState: "up" | "down" | "none") => {
     setLoading(false);
+    console.log(session.user);
+    if (!session.user) {
+      openLoginModal();
+      return;
+    }
     const updatedPost = isFeed
       ? useFeedStore.getState().feed.find((item) => item.id === id)
       : usePostStore.getState().post;
 
     if (!updatedPost) return;
-
     const { likeCount, isLiked } = updatedPost;
     const initialLikeCount = initialLikeCountRef.current;
 
