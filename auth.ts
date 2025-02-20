@@ -3,7 +3,8 @@ import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
 import Kakao from "next-auth/providers/kakao";
-
+import { cookies } from "next/headers";
+import cookie from "cookie";
 interface UserInfo {
   nickname?: string;
   email: string;
@@ -158,6 +159,13 @@ async function makeRequest(url: string, body: object) {
   });
 
   const data = (await res.json()) as ResponseValue | string;
+  if (data.sid) {
+    let setCookie = data.sid;
+    if (setCookie) {
+      console.log(setCookie);
+      cookies().set("connect.sid", setCookie);
+    }
+  }
   console.log(JSON.stringify(data));
   if (res.ok && typeof data !== "string") {
     return data;

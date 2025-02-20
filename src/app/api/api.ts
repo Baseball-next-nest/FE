@@ -55,7 +55,7 @@ export async function getPitcher() {
 }
 
 export async function getPlayerIdData(id: string) {
-  return fetcher(`/player/detail?id=${id}`);
+  return fetcher(`/player/detail?id=${id}`, { disableLoading: true });
 }
 export async function getPlayerNameData(name: string) {
   return fetcher(`/player/search?name=${name}`);

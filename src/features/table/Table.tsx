@@ -1,6 +1,8 @@
 "use client";
+import { getPlayerIdData } from "@/app/api/api";
 import Link from "next/link";
 import { FC, ReactNode } from "react";
+import { PlayerHover } from "../player/PlayerHover";
 /* eslint-disable jsx-a11y/anchor-is-valid */
 interface TableProps {
   children: ReactNode;
@@ -69,7 +71,7 @@ export const Table: FC<TableProps> = ({ children, hitter, pitcher }) => {
                           query: { id: hit.id },
                         }}
                       >
-                        {hit.name}
+                        <PlayerHover playerId={hit.id} playerName={hit.name} />
                       </Link>
                     </td>
                     <td>{hit.WAR}</td>
@@ -96,7 +98,7 @@ export const Table: FC<TableProps> = ({ children, hitter, pitcher }) => {
                           query: { id: pit.id },
                         }}
                       >
-                        {pit.name}
+                        <PlayerHover playerId={pit.id} playerName={pit.name} />
                       </Link>
                     </td>
                     <td>{pit.WAR}</td>
