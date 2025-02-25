@@ -21,7 +21,6 @@ export default async function ({ searchParams }) {
   const playerTableData = playerData.records;
   const playerType = playerData.group;
   console.log(playerData.group);
-  // console.log(playerData.records);
   return (
     <div className="basic-container justify-center">
       {playerData ? (

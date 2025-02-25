@@ -17,3 +17,20 @@ export function getRelativeTime(timestamp: string): string {
     return target.toLocaleDateString(); // 기본 날짜 포맷
   }
 }
+export const calculateAge = (birthDate: string): number => {
+  const today = new Date();
+  const birth = new Date(birthDate);
+  let age = today.getFullYear() - birth.getFullYear();
+
+  // 생일이 아직 안 지났으면 -1
+  const isBeforeBirthday =
+    today.getMonth() < birth.getMonth() ||
+    (today.getMonth() === birth.getMonth() &&
+      today.getDate() < birth.getDate());
+
+  if (isBeforeBirthday) {
+    age -= 1;
+  }
+
+  return age;
+};

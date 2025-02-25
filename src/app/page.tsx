@@ -7,7 +7,7 @@ export default async function Home() {
   const hitter = await getHitter();
   const pitcher = await getPitcher();
   const session = await getSession();
-  console.log("getSEsiion " + JSON.stringify(session));
+  // console.log("getSEsiion " + JSON.stringify(hitter));
   return (
     // <main className="flex min-h-screen flex-col items-center justify-between p-24">
     //
