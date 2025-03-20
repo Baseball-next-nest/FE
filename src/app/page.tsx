@@ -10,7 +10,6 @@ export default async function Home() {
   // console.log("getSEsiion " + JSON.stringify(hitter));
   return (
     // <main className="flex min-h-screen flex-col items-center justify-between p-24">
-    //
     <main className="text-black flex w-full pt-8 flex-wrap gap-8">
       {/* <div>
         <AuthSection />

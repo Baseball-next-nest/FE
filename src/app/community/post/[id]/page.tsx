@@ -72,8 +72,6 @@ export default function PostDetail({ params }: PostDetailProps) {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [session, params.id]);
-  // console.log(post?.comment);
-  // console.log(post);
   if (!post) {
     return <div>게시글을 찾을 수 없습니다.</div>;
   }

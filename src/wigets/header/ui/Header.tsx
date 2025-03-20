@@ -48,9 +48,6 @@ export default function Header() {
     }
     router.push("/");
   };
-  // const check = () => {
-  //   _existUser("robbins3erwer11@nate.com");
-  // };
   const { openLoginModal } = useModalStore();
   return (
     <header className="bg-white p-4 text-black shadow-md sticky top-0 z-50">

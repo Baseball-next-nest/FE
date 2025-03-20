@@ -2,16 +2,18 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { match } from "path-to-regexp";
 import { getSession } from "@/serverActions/auth";
+import { cookies } from "next/headers";
 const matchersForAuth = ["/myaccount/:path", "/users/:path"];
 const matchersForSignIn = ["/signup/:path", "/signin/:path"];
 export async function middleware(request: NextRequest) {
-  // console.log("middleware " + request.nextUrl.pathname);
-  // console.log("middleware session " + (await getSession()));
+  const response = NextResponse.next();
+  // const cccc = cookies();
+  // console.log(cccc);
+  const cookieHeader = request.headers.get("cookie");
   if (isMatch(request.nextUrl.pathname, matchersForAuth)) {
     return (await getSession())
       ? NextResponse.next()
       : NextResponse.redirect(new URL("/", request.url));
-    // : NextResponse.redirect(new URL(`/signin?callbackUrl=${request.url}`, request.url))
   }
   // 인증 후 회원가입 및 로그인 접근 제어!
   if (isMatch(request.nextUrl.pathname, matchersForSignIn)) {
@@ -19,7 +21,27 @@ export async function middleware(request: NextRequest) {
       ? NextResponse.redirect(new URL("/", request.url))
       : NextResponse.next();
   }
-  return NextResponse.next();
+
+  response.headers.set("Access-Control-Allow-Origin", "*");
+  response.headers.set("Access-Control-Allow-Credentials", "true");
+  response.headers.set(
+    "Access-Control-Allow-Methods",
+    "GET, POST, PUT, DELETE, OPTIONS"
+  );
+  response.headers.set(
+    "Access-Control-Allow-Headers",
+    "Content-Type, Authorization"
+  );
+
+  // console.log(connectSid);
+  if (cookieHeader) {
+    response.headers.set("Cookie", cookieHeader);
+    // response.cookies.set("cookie", cookieHeader);
+  }
+  if (response.status === 401) {
+    console.log("errr");
+  }
+  return response;
 }
 
 // 경로 일치 확인!

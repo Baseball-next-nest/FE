@@ -46,6 +46,7 @@ export default function post() {
       alert("팀을 선택해주세요.");
       return;
     }
+    console.log(session);
     const user = session.user.id;
     const postData = {
       category: selectedTeam.team,

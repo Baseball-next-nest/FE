@@ -37,6 +37,7 @@ async function fetcher(
     if (!disableLoading) {
       setLoading(false);
     }
+
     return await res.json();
   } catch (error) {
     throw error;
@@ -97,7 +98,6 @@ export async function fetchBoardPostById(id: number, userId?: number) {
   const url = id
     ? `/community/one?id=${id}&userId=${userId}`
     : `/community?id=${id}`;
-  console.log(url);
   return fetcher(url);
 }
 export async function deleteCommunityPost(id: number) {
@@ -112,6 +112,7 @@ export async function deleteCommunityPost(id: number) {
 export async function updateVote(like: any) {
   return fetcher(`/community/updown`, {
     method: "POST",
+    credentials: "include",
     headers: {
       "Content-Type": "application/json",
     },

@@ -17,6 +17,9 @@ interface PlayerInfo {
   position: string;
   back_number: string;
   birth_date: string;
+  image_url: string;
+  group: string;
+  season: [];
 }
 
 export const PlayerHover: FC<PlayerHoverProps> = ({ playerId, playerName }) => {
@@ -66,7 +69,7 @@ export const PlayerHover: FC<PlayerHoverProps> = ({ playerId, playerName }) => {
       {/* 선수 이름 */}
       <span
         onMouseEnter={() => setIsHovered(true)}
-        // onMouseLeave={() => setIsHovered(false)}
+        onMouseLeave={() => setIsHovered(false)}
         className="cursor-pointer text-blue-500 hover:underline"
       >
         {playerName}
@@ -82,9 +85,16 @@ export const PlayerHover: FC<PlayerHoverProps> = ({ playerId, playerName }) => {
         >
           {/* header */}
           <div className="flex justify-around">
-            <div>와꾸</div>
+            <Image
+              width={60}
+              height={20}
+              src={`/api/proxy?url=${encodeURIComponent(playerInfo.image_url)}`}
+              alt={`${playerInfo.name} profile`}
+              unoptimized
+              className="rounded-sm"
+            ></Image>
             {/* 왼쪽 */}
-            <div className="flex flex-col">
+            <div className="flex flex-col justify-evenly">
               <div className="flex">
                 <span>{playerInfo.back_number}.</span>
                 <h3 className="text-lg font-semibold !text-black">
@@ -98,7 +108,9 @@ export const PlayerHover: FC<PlayerHoverProps> = ({ playerId, playerName }) => {
               <div className="flex flex-col">
                 <div>
                   <span>{calculateAge(playerInfo.birth_date)}세</span>
-                  <span>({playerInfo.birth_date})</span>
+                  <span className="text-[0.6rem]">
+                    ({playerInfo.birth_date})
+                  </span>
                 </div>
               </div>
             </div>
@@ -121,12 +133,37 @@ export const PlayerHover: FC<PlayerHoverProps> = ({ playerId, playerName }) => {
                   {playerInfo.team}
                 </p>
               </div>
-              <div>연봉</div>
-              <div>계약기간</div>
+              {/* <div>
+                <span>7억</span>
+              </div> */}
             </div>
           </div>
           {/* 3시즌 성적 테이블 */}
-          <div>타자: 타율 / 홈런 / war / wrc 투수: 승 / 패 / war / wrc</div>
+          <div className="mt-1">
+            {playerInfo.group == "B" ? (
+              <div className="flex justify-evenly items-center">
+                <span>타율: {playerInfo.season[0]?.AVG} </span>
+                <span>홈런: {playerInfo.season[0]?.HR}</span>
+                <span>
+                  WAR: {parseFloat(playerInfo.season[0]?.WAR).toFixed(2)}
+                </span>
+                <span>
+                  WRC+: {parseFloat(playerInfo.season[0]?.WRC).toFixed(1)}
+                </span>
+              </div>
+            ) : (
+              <div className="flex justify-evenly items-center">
+                <span>
+                  승/패: {playerInfo.season[0]?.W}-{playerInfo.season[0]?.L}
+                </span>
+                <span>삼진: {playerInfo.season[0]?.SO}</span>
+                <span>WHIP: {playerInfo.season[0]?.WHIP}</span>
+                <span>
+                  WAR: {parseFloat(playerInfo.season[0]?.WAR).toFixed(2)}
+                </span>
+              </div>
+            )}
+          </div>
         </div>
       )}
     </div>

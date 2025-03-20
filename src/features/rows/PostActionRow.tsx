@@ -6,6 +6,7 @@ import { useModalStore } from "@/entities/ModalStore";
 import { usePostStore } from "@/entities/PostStore";
 import { useSessionStore } from "@/entities/SessionStore";
 import clsx from "clsx";
+import { cookies } from "next/headers";
 import Link from "next/link";
 import { FC, useEffect, useRef, useState } from "react";
 import { FaArrowUp, FaArrowDown, FaRegComment, FaShare } from "react-icons/fa";
@@ -49,6 +50,7 @@ export const PostActionRows: FC<PostActionRowstProps> = ({
   const updatePostVoteState = async (newVoteState: "up" | "down" | "none") => {
     setLoading(false);
     console.log(session.user);
+    console.log(session);
     if (!session.user) {
       openLoginModal();
       return;
