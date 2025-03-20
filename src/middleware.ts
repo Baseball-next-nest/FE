@@ -7,8 +7,7 @@ const matchersForAuth = ["/myaccount/:path", "/users/:path"];
 const matchersForSignIn = ["/signup/:path", "/signin/:path"];
 export async function middleware(request: NextRequest) {
   const response = NextResponse.next();
-  // const cccc = cookies();
-  // console.log(cccc);
+
   const cookieHeader = request.headers.get("cookie");
   if (isMatch(request.nextUrl.pathname, matchersForAuth)) {
     return (await getSession())
@@ -30,13 +29,11 @@ export async function middleware(request: NextRequest) {
   );
   response.headers.set(
     "Access-Control-Allow-Headers",
-    "Content-Type, Authorization"
+    "Content-Type, Authorization, Cache-Control"
   );
 
-  // console.log(connectSid);
   if (cookieHeader) {
     response.headers.set("Cookie", cookieHeader);
-    // response.cookies.set("cookie", cookieHeader);
   }
   if (response.status === 401) {
     console.log("errr");

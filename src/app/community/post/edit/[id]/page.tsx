@@ -10,7 +10,6 @@ import TextEditor from "@/features/select-box/TextEditor";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { mutate } from "swr";
 
 interface EditDetailProps {
   params: { id: number };
@@ -20,7 +19,6 @@ export default function EditPage({ params }: EditDetailProps) {
   const { selectedTeam, selectTeam } = useTeamStore();
   const { setLoading } = useLoadingStore();
   const router = useRouter();
-  // const params = useParams();
 
   const {
     register,

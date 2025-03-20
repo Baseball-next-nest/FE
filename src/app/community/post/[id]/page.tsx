@@ -52,7 +52,6 @@ export default function PostDetail({ params }: PostDetailProps) {
         const postId = params.id;
         const res = await fetchBoardPostById(Number(postId), userId);
         setPost(res);
-        // setPost(res);
       } catch (err) {
         console.error(err);
       }
@@ -112,7 +111,6 @@ export default function PostDetail({ params }: PostDetailProps) {
         </span>
         <span className="w-[32px] h-[32px] flex items-center pb-1 cursor-pointer">
           <DropdownMenu postId={postId} />
-          {/* <CiMenuKebab className="w-[24px] h-[24px]" /> */}
         </span>
       </div>
       <h1 className="w-4/5 text-center font-semibold text-neutral-content-strong m-0 text-18 xs:text-24  mb-4  overflow-hidden">

@@ -7,13 +7,8 @@ export default async function Home() {
   const hitter = await getHitter();
   const pitcher = await getPitcher();
   const session = await getSession();
-  // console.log("getSEsiion " + JSON.stringify(hitter));
   return (
-    // <main className="flex min-h-screen flex-col items-center justify-between p-24">
     <main className="text-black flex w-full pt-8 flex-wrap gap-8">
-      {/* <div>
-        <AuthSection />
-      </div> */}
       <div className="flex w-full">
         {/* 타자 */}
         <div className="w-49p mr-4">

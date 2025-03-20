@@ -5,8 +5,6 @@ import clsx from "clsx";
 import { FC, useEffect, useState } from "react";
 import { FaRegComment, FaArrowUp, FaArrowDown } from "react-icons/fa";
 import { MdOutlineCreate, MdDeleteOutline } from "react-icons/md";
-import LoadingSpinner from "../loading/Loading";
-import { CommentsInput } from "../input/CommentsInput";
 import { removeCommentWithChildren, usePostStore } from "@/entities/PostStore";
 import { useModalStore } from "@/entities/ModalStore";
 

@@ -10,8 +10,7 @@ export const PlayerGridTable: FC<PlayerGridTableProps> = ({
   children,
 }) => {
   const playerType = player.group === "P" ? "pitcher" : "hitter";
-  // console.log(playerType);
-  // console.log(player);
+
   return (
     <ContentBox>
       {/* season */}

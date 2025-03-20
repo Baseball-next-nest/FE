@@ -66,7 +66,6 @@ export default function Header() {
 
         {session?.user ? (
           <>
-            {/* {session.user.email} */}
             <form className="flex items-center" onSubmit={logout}>
               <span className="mr-2 font-medium text-sm">
                 {session.user.nickname}님
